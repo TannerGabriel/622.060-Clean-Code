@@ -21,9 +21,9 @@ jacocoTestReport {
 
     reports {
         xml.required = true
-        xml.outputLocation = file("${buildDir}/reports/jacoco/xml/jacocoTestReport.xml")
+        xml.outputLocation = file("${project.projectDir}/build/reports/jacoco/xml/jacocoTestReport.xml")
         html.required = true
-        html.outputLocation = file("${buildDir}/reports/jacoco/html")
+        html.outputLocation = file("${project.projectDir}/build/reports/jacoco/html")
     }
 
     afterEvaluate {
@@ -32,7 +32,7 @@ jacocoTestReport {
             fileTree(dir: it, excludes: fileFilter)
         }))
         sourceDirectories.setFrom(files("${projectDir}/src/main/java"))
-        executionData.setFrom(fileTree(dir: "${buildDir}/jacoco", includes: ["test.exec"]))
+        executionData.setFrom(fileTree(dir: "${project.projectDir}/build/jacoco", includes: ["test.exec"]))
     }
 }
 
@@ -42,7 +42,7 @@ sonar {
         property "sonar.organization", "tannergabriel"
         property "sonar.host.url", "https://sonarcloud.io"
         property "sonar.java.coveragePlugin", "jacoco"
-        property "sonar.coverage.jacoco.xmlReportPaths", "${project.projectDir}/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${project.projectDir}/build/reports/jacoco/xml/jacocoTestReport.xml"
     }
 }
 
