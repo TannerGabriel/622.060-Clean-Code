@@ -19,6 +19,7 @@ public class Main {
     private static final HashSet<String> visitedUrls = new HashSet<>();
     private static int depthLimit;
     private static String domainFilter;
+    private static String targetLang;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -28,6 +29,8 @@ public class Main {
         depthLimit = Integer.parseInt(scanner.nextLine());
         System.out.println("Enter domain filter:");
         domainFilter = scanner.nextLine();
+        System.out.println("Enter target Language:");
+        targetLang = scanner.nextLine();
 
         try (PrintWriter writer = new PrintWriter("output.md", StandardCharsets.UTF_8)) {
             writer.println("input: <a>" + startUrl + "</a>");
@@ -56,7 +59,7 @@ public class Main {
 
             Elements headings = doc.select("h1, h2, h3, h4, h5, h6");
             for (Element heading : headings) {
-                writer.println(indent + "#".repeat(getHeaderLevel(heading)) + translate(heading.text(), "de-de"));
+                writer.println(indent + "#".repeat(getHeaderLevel(heading)) + translate(heading.text(), targetLang));
             }
 
             for (Element link : links) {
@@ -97,24 +100,28 @@ public class Main {
         return fragmentIndex < 0 ? url : url.substring(0, fragmentIndex);
     }
 
-    private static String translate(String text, String targetLang) throws IOException {
+    private static String translate(String text, String targetLang) {
 
         OkHttpClient client = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create("{\"q\": \"" + text + "\",\"source\": \"en\",\"target\": \"" + targetLang + "\",\"format\": \"text\"}",mediaType);
+        RequestBody body = RequestBody.create("{\"q\": \"" + text + "\",\"source\": \"en\",\"target\": \"" + targetLang + "\",\"format\": \"text\"}", mediaType);
         Request request = new Request.Builder()
                 .url("https://google-translator9.p.rapidapi.com/v2")
                 .post(body)
                 .addHeader("content-type", "application/json")
-                .addHeader("X-RapidAPI-Key", "3da7b257d7msh9c65f8753ebe9d7p1daf4ajsn956c62c45dcc")
+                .addHeader("X-RapidAPI-Key", System.getenv("CLEANCODEAPIKEY"))
                 .addHeader("X-RapidAPI-Host", "google-translator9.p.rapidapi.com")
                 .build();
 
-        Response response = client.newCall(request).execute();
+        try {
+            Response response = client.newCall(request).execute();
+            JSONObject jsonObject = new JSONObject(response.body().string());
+            return jsonObject.getJSONObject("data").getJSONArray("translations").getJSONObject(0).getString("translatedText");
+        } catch (Exception e) {
+            System.out.println("Translation failed using original Lang");
+            return text;
+        }
 
-        JSONObject jsonObject = new JSONObject(response.body().string());
-
-        return jsonObject.getJSONObject("data").getJSONArray("translations").getJSONObject(0).getString("translatedText");
     }
 }
