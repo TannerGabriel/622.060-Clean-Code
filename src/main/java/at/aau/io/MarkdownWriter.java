@@ -26,8 +26,8 @@ public class MarkdownWriter {
     public void printCrawlDetails(String startUrl, int depth, String targetLanguage) {
         writer.println("input: <a>" + startUrl + "</a>");
         writer.println("depth: " + depth);
-        // TODO: Get source language using api
-        writer.println("source language: english");
+        // TODO: Use real text for source language
+        writer.println("source language: " + translator.getSourceLanguage("english"));
         writer.println("target language: " + targetLanguage);
         writer.println("summary: ");
     }
@@ -40,10 +40,18 @@ public class MarkdownWriter {
     public void writeHeadings(Elements headings, int depth, String targetLang) {
         String indent = "  ".repeat(depth);
 
+        boolean validTargetLanguage = translator.isValidTargetLanguage(targetLang);
+        if (!validTargetLanguage) {
+            System.out.println("Target language is invalid. Continuing with source language instead!");
+        }
+
         headings.forEach(heading -> {
-            // TODO: Check if targetLang is valid
-            String translatedHeading = translator.translate(heading.text(), targetLang);
-            writer.println(indent + "#".repeat(CrawlerUtils.getHeaderLevel(heading)) + " " + translatedHeading);
+            if(validTargetLanguage) {
+                String translatedHeading = translator.translate(heading.text(), targetLang);
+                writer.println(indent + "#".repeat(CrawlerUtils.getHeaderLevel(heading)) + " " + translatedHeading);
+            } else {
+                writer.println(indent + "#".repeat(CrawlerUtils.getHeaderLevel(heading)) + " " + heading.text());
+            }
         });
     }
 
