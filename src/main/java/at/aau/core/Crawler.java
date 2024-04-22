@@ -7,7 +7,6 @@ import at.aau.utils.CrawlerUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-
 import java.io.IOException;
 import java.util.HashSet;
 
@@ -29,6 +28,7 @@ public class Crawler {
 
     public void startCrawling() {
         try {
+            writer.printCrawlDetails(startUrl, depthLimit, targetLang);
             crawl(startUrl, 0);
             writer.close();
         } catch (IOException e) {

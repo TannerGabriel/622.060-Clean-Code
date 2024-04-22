@@ -5,7 +5,6 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,7 +43,7 @@ public class LinkExtractor {
     public boolean isBrokenLink(String url) {
         try {
             int statusCode = Jsoup.connect(url).ignoreHttpErrors(true).timeout(3000).method(Connection.Method.HEAD).execute().statusCode();
-            return statusCode >= 400;
+            return statusCode != 404;
         } catch (Exception e) {
             return true;
         }

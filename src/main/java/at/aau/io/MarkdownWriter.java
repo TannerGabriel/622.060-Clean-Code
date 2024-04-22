@@ -23,6 +23,15 @@ public class MarkdownWriter {
         }
     }
 
+    public void printCrawlDetails(String startUrl, int depth, String targetLanguage) {
+        writer.println("input: <a>" + startUrl + "</a>");
+        writer.println("depth: " + depth);
+        // TODO: Get source language using api
+        writer.println("source language: english");
+        writer.println("target language: " + targetLanguage);
+        writer.println("summary: ");
+    }
+
     public void writeContent(Elements headings, LinkResults links, int depth, String targetLang) {
         writeHeadings(headings, depth, targetLang);
         writeLinks(links, depth);
@@ -32,8 +41,9 @@ public class MarkdownWriter {
         String indent = "  ".repeat(depth);
 
         headings.forEach(heading -> {
+            // TODO: Check if targetLang is valid
             String translatedHeading = translator.translate(heading.text(), targetLang);
-            writer.println(indent + "#".repeat(CrawlerUtils.getHeaderLevel(heading)) + translatedHeading);
+            writer.println(indent + "#".repeat(CrawlerUtils.getHeaderLevel(heading)) + " " + translatedHeading);
         });
     }
 
