@@ -7,6 +7,8 @@ public class Translator {
     private OkHttpClient httpClient = new OkHttpClient();;
 
     public String translate(String text, String targetLanguage) {
+        if (!validateApiKey()) return text;
+
         Request request = createRequest(text, targetLanguage);
 
         try {
@@ -26,8 +28,21 @@ public class Translator {
                 .url("https://google-translator9.p.rapidapi.com/v2")
                 .post(body)
                 .addHeader("content-type", "application/json")
-                .addHeader("X-RapidAPI-Key", System.getenv("CLEANCODEAPIKEY"))
+                .addHeader("X-RapidAPI-Key", getTranslateApiKey())
                 .addHeader("X-RapidAPI-Host", "google-translator9.p.rapidapi.com")
                 .build();
+    }
+
+    private String getTranslateApiKey() {
+        String key = System.getenv("CLEANCODEAPIKEY");
+        if (key == null) {
+            System.out.println("No translation API key found in the system. Continuing without translations!");
+            return "";
+        }
+        return key;
+    }
+
+    private boolean validateApiKey() {
+        return !getTranslateApiKey().isEmpty();
     }
 }

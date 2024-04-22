@@ -43,7 +43,7 @@ public class LinkExtractor {
     public boolean isBrokenLink(String url) {
         try {
             int statusCode = Jsoup.connect(url).ignoreHttpErrors(true).timeout(3000).method(Connection.Method.HEAD).execute().statusCode();
-            return statusCode != 404;
+            return statusCode == 404;
         } catch (Exception e) {
             return true;
         }
