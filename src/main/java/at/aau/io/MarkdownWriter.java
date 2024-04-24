@@ -33,7 +33,7 @@ public class MarkdownWriter {
     }
 
     public void writeContent(String url,Elements headings, LinkResults links, int depth, String targetLang) {
-        writer.println("--- \n URL: <a href=\"" + url + "\">" + url + "</a>");
+        writer.println("--- \nURL: <a href=\"" + url + "\">" + url + "</a>");
         writeHeadings(headings, depth, targetLang);
         writeLinks(links, depth);
     }
