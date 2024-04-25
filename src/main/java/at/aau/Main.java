@@ -1,16 +1,30 @@
 package at.aau;
 
 import at.aau.core.Crawler;
+
 import java.util.Scanner;
 
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        String startUrl = getInput("Enter the starting URL:", Main::validateUrl);
-        int depthLimit = getIntInput("Enter depth limit:", Main::validatePositiveNumber);
-        String domainFilter = getInput("Enter domain filter:", s -> !s.isEmpty());
-        String targetLang = getInput("Enter target Language:", s -> !s.isEmpty());
+
+        String startUrl;
+        int depthLimit;
+        String domainFilter;
+        String targetLang;
+
+        if (args.length == 4) {
+            startUrl = args[0];
+            depthLimit = Integer.parseInt(args[1]);
+            domainFilter = args[2];
+            targetLang = args[3];
+        } else {
+            startUrl = getInput("Enter the starting URL:", Main::validateUrl);
+            depthLimit = getIntInput("Enter depth limit:", Main::validatePositiveNumber);
+            domainFilter = getInput("Enter domain filter:", s -> !s.isEmpty());
+            targetLang = getInput("Enter target Language:", s -> !s.isEmpty());
+        }
 
         Crawler crawler = new Crawler(startUrl, depthLimit, domainFilter, targetLang);
         crawler.startCrawling();

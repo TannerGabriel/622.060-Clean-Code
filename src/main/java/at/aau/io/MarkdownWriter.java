@@ -25,14 +25,15 @@ public class MarkdownWriter {
 
     public void printCrawlDetails(String startUrl, int depth, String targetLanguage) {
         writer.println("input: <a>" + startUrl + "</a>");
-        writer.println("depth: " + depth);
+        writer.println("<br> depth: " + depth);
         // TODO: Use real text for source language
-        writer.println("source language: " + translator.getSourceLanguage("english"));
-        writer.println("target language: " + targetLanguage);
-        writer.println("summary: ");
+        writer.println("<br> source language: " + translator.getSourceLanguage("english"));
+        writer.println("<br> target language: " + targetLanguage);
+        writer.println("<br> summary: ");
     }
 
-    public void writeContent(Elements headings, LinkResults links, int depth, String targetLang) {
+    public void writeContent(String url,Elements headings, LinkResults links, int depth, String targetLang) {
+        writer.println("--- \nURL: <a href=\"" + url + "\">" + url + "</a>");
         writeHeadings(headings, depth, targetLang);
         writeLinks(links, depth);
     }
@@ -59,11 +60,11 @@ public class MarkdownWriter {
         String indent = "  ".repeat(depth);
 
         for (String link : links.validLinks) {
-            writer.println(indent + "--> link to <a>" + link + "</a>");
+            writer.println(indent + "--> link to <a>" + link + "</a> <br>");
         }
 
         for (String link : links.brokenLinks) {
-            writer.println(indent + "--> broken link <a>" + link + "</a>");
+            writer.println(indent + "--> broken link <a>" + link + "</a> <br>");
         }
     }
 

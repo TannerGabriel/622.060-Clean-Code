@@ -47,7 +47,7 @@ public class Crawler {
         LinkResults links = extractor.validateLinks(extractor.extractLinks());
         Elements headings = extractor.extractHeadings();
 
-        writer.writeContent(headings, links, depth, targetLang);
+        writer.writeContent(url,headings, links, depth, targetLang);
 
         links.validLinks.forEach(link -> {
             if (!visitedUrls.contains(link)) {
