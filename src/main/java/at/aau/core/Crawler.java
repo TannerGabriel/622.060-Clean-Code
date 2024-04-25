@@ -9,6 +9,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Crawler {
     private HashSet<String> visitedUrls = new HashSet<>();
@@ -47,7 +49,9 @@ public class Crawler {
         LinkResults links = extractor.validateLinks(extractor.extractLinks());
         Elements headings = extractor.extractHeadings();
 
-        writer.writeContent(url,headings, links, depth, targetLang);
+        if(isInFilter(domainFilter,url)){
+            writer.writeContent(url,headings, links, depth, targetLang);
+        }
 
         links.validLinks.forEach(link -> {
             if (!visitedUrls.contains(link)) {
@@ -58,5 +62,11 @@ public class Crawler {
                 }
             }
         });
+    }
+
+    private boolean isInFilter(String domainFilter, String url) {
+        Pattern pattern = Pattern.compile(domainFilter);
+        Matcher matcher = pattern.matcher(url);
+        return matcher.matches();
     }
 }
