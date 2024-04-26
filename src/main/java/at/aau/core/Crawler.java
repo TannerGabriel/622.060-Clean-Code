@@ -7,6 +7,7 @@ import at.aau.utils.CrawlerUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.regex.Matcher;
@@ -49,19 +50,20 @@ public class Crawler {
         LinkResults links = extractor.validateLinks(extractor.extractLinks());
         Elements headings = extractor.extractHeadings();
 
-        if(isInFilter(domainFilter,url)){
-            writer.writeContent(url,headings, links, depth, targetLang);
-        }
+        if (isInFilter(domainFilter, url)) {
+            writer.writeContent(url, headings, links, depth, targetLang);
 
-        links.validLinks.forEach(link -> {
-            if (!visitedUrls.contains(link)) {
-                try {
-                    crawl(link, depth + 1);
-                } catch (IOException e) {
-                    e.printStackTrace();
+            links.validLinks.forEach(link -> {
+                if (!visitedUrls.contains(link)) {
+                    try {
+                        crawl(link, depth + 1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        });
+            });
+
+        }
     }
 
     private boolean isInFilter(String domainFilter, String url) {
