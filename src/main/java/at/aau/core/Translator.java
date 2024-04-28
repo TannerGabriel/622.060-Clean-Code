@@ -20,6 +20,9 @@ public class Translator {
                     .put("format", "text");
 
             Response response = httpClient.newCall(buildRequest("https://google-translator9.p.rapidapi.com/v2", jsonPayload, "POST")).execute();
+            if (!validateResponse(response)) {
+                return text;
+            }
             return parseTranslation(response);
         } catch (Exception e) {
             System.out.println("Translation failed: " + e.getMessage());
@@ -79,11 +82,19 @@ public class Translator {
     }
 
     private String parseLanguageDetection(Response response) throws IOException {
+        if (!validateResponse(response)) {
+            return "";
+        }
+
         JSONObject jsonObject = new JSONObject(response.body().string());
         return jsonObject.getJSONObject("data").getJSONArray("detections").getJSONArray(0).getJSONObject(0).getString("language");
     }
 
     private boolean checkLanguageAvailability(Response response, String targetLanguage) throws IOException {
+        if (!validateResponse(response)) {
+            return false;
+        }
+
         JSONObject jsonObject = new JSONObject(response.body().string());
         JSONArray languages = jsonObject.getJSONObject("data").getJSONArray("languages");
         for (int i = 0; i < languages.length(); i++) {
@@ -92,6 +103,14 @@ public class Translator {
             }
         }
         return false;
+    }
+
+    private boolean validateResponse(Response response) {
+        if (!response.isSuccessful()) {
+            System.out.println("Request failed with status code: " + response.code());
+            return false;
+        }
+        return true;
     }
 
     private String getTranslateApiKey() {
