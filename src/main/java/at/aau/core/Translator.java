@@ -61,11 +61,11 @@ public class Translator {
 
         Request.Builder builder = new Request.Builder()
                 .url(url)
-                .addHeader("content-type", "application/json")
                 .addHeader("X-RapidAPI-Key", getTranslateApiKey())
                 .addHeader("X-RapidAPI-Host", "google-translator9.p.rapidapi.com");
 
         if (method.equals("POST")) {
+            builder.addHeader("content-type", "application/json");
             builder.post(RequestBody.create(jsonPayload.toString(), mediaType));
         } else if (method.equals("GET")) {
             builder.get();
