@@ -16,15 +16,19 @@ public class MarkdownWriter {
 
     public MarkdownWriter(String fileName) {
         this.translator = new Translator();
+        initializeWriter(fileName);
+    }
+
+    private void initializeWriter(String fileName) {
         try {
-            this.writer = new PrintWriter(Files.newBufferedWriter(Paths.get(fileName), StandardCharsets.UTF_8));
+            writer = new PrintWriter(Files.newBufferedWriter(Paths.get(fileName), StandardCharsets.UTF_8));
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Failed to initialize file writer: " + e.getMessage());
         }
     }
 
     public void printCrawlDetails(String startUrl, int depth, String targetLanguage) {
-        writer.println("input: <a>" + startUrl + "</a>");
+        writer.println("input: <a href=\"" + startUrl + "\">" + startUrl + "</a>");
         writer.println("<br> depth: " + depth);
         // TODO: Use real text for source language
         writer.println("<br> source language: " + translator.getSourceLanguage("english"));
@@ -32,43 +36,40 @@ public class MarkdownWriter {
         writer.println("<br> summary: ");
     }
 
-    public void writeContent(String url,Elements headings, LinkResults links, int depth, String targetLang) {
-        writer.println("--- \nURL: <a href=\"" + url + "\">" + url + "</a>");
+    public void writeContent(String url, Elements headings, LinkResults links, int depth, String targetLang) {
+        writer.println("---");
+        writer.println("Crawled URL: <a href=\"" + url + "\">" + url + "</a>");
         writeHeadings(headings, depth, targetLang);
         writeLinks(links, depth);
     }
 
     public void writeHeadings(Elements headings, int depth, String targetLang) {
-        String indent = "  ".repeat(depth);
+        String indentation = "  ".repeat(depth);
+        boolean isValidLanguage = translator.isValidTargetLanguage(targetLang);
 
-        boolean validTargetLanguage = translator.isValidTargetLanguage(targetLang);
-        if (!validTargetLanguage) {
+        if (!isValidLanguage) {
             System.out.println("Target language is invalid. Continuing with source language instead!");
         }
 
         headings.forEach(heading -> {
-            if(validTargetLanguage) {
-                String translatedHeading = translator.translate(heading.text(), targetLang);
-                writer.println(indent + "#".repeat(CrawlerUtils.getHeaderLevel(heading)) + " " + translatedHeading);
-            } else {
-                writer.println(indent + "#".repeat(CrawlerUtils.getHeaderLevel(heading)) + " " + heading.text());
-            }
+            String headingText = isValidLanguage ?
+                    translator.translate(heading.text(), targetLang) :
+                    heading.text();
+            writer.println(indentation + "#".repeat(CrawlerUtils.getHeaderLevel(heading)) + " " + headingText);
         });
     }
 
     public void writeLinks(LinkResults links, int depth) {
-        String indent = "  ".repeat(depth);
-
-        for (String link : links.validLinks) {
-            writer.println(indent + "--> link to <a>" + link + "</a> <br>");
-        }
-
-        for (String link : links.brokenLinks) {
-            writer.println(indent + "--> broken link <a>" + link + "</a> <br>");
-        }
+        String indentation = createIndentation(depth);
+        links.validLinks.forEach(link -> writer.println(indentation + "Valid link: <a href=\"" + link + "\">" + link + "</a>"));
+        links.brokenLinks.forEach(link -> writer.println(indentation + "Broken link: <a href=\"" + link + "\">" + link + "</a>"));
     }
 
     public void close() throws IOException {
         writer.close();
+    }
+
+    private String createIndentation(int depth) {
+        return "  ".repeat(depth);
     }
 }
