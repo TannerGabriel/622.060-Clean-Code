@@ -69,7 +69,7 @@ public class MarkdownWriter {
         writer.close();
     }
 
-    private String createIndentation(int depth) {
+    protected String createIndentation(int depth) {
         return "  ".repeat(depth);
     }
 }
