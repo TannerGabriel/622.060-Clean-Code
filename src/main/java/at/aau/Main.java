@@ -1,5 +1,6 @@
 package at.aau;
 
+import at.aau.core.CrawlerConfig;
 import at.aau.core.Crawler;
 
 import java.util.Scanner;
@@ -8,26 +9,22 @@ public class Main {
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-
-        String startUrl;
-        int depthLimit;
-        String domainFilter;
-        String targetLang;
-
-        if (args.length == 4) {
-            startUrl = args[0];
-            depthLimit = Integer.parseInt(args[1]);
-            domainFilter = args[2];
-            targetLang = args[3];
-        } else {
-            startUrl = getInput("Enter the starting URL:", Main::validateUrl);
-            depthLimit = getIntInput("Enter depth limit:", Main::validatePositiveNumber);
-            domainFilter = getInput("Enter domain filter:", s -> !s.isEmpty());
-            targetLang = getInput("Enter target Language:", s -> !s.isEmpty());
-        }
-
-        Crawler crawler = new Crawler(startUrl, depthLimit, domainFilter, targetLang);
+        CrawlerConfig config = getConfig(args);
+        Crawler crawler = new Crawler(config);
         crawler.startCrawling();
+    }
+
+    private static CrawlerConfig getConfig(String[] args) {
+        if (args.length == 4) {
+            return new CrawlerConfig(args[0], Integer.parseInt(args[1]), args[2], args[3]);
+        } else {
+            return new CrawlerConfig(
+                    getInput("Enter the starting URL:", Main::validateUrl),
+                    getIntInput("Enter depth limit:", Main::validatePositiveNumber),
+                    getInput("Enter domain filter:", s -> !s.isEmpty()),
+                    getInput("Enter target Language:", s -> !s.isEmpty())
+            );
+        }
     }
 
     private static String getInput(String prompt, Validator<String> validator) {

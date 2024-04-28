@@ -10,65 +10,56 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Crawler {
     private HashSet<String> visitedUrls = new HashSet<>();
-    private String startUrl;
-    private int depthLimit;
-    private String domainFilter;
-    private String targetLang;
+    private CrawlerConfig config;
     private MarkdownWriter writer;
 
-    public Crawler(String startUrl, int depthLimit, String domainFilter, String targetLang) {
-        this.startUrl = startUrl;
-        this.depthLimit = depthLimit;
-        this.domainFilter = domainFilter;
-        this.targetLang = targetLang;
+    public Crawler(CrawlerConfig config) {
+        this.config = config;
         this.writer = new MarkdownWriter("output.md");
     }
 
     public void startCrawling() {
         try {
-            writer.printCrawlDetails(startUrl, depthLimit, targetLang);
-            crawl(startUrl, 0);
+            writer.printCrawlDetails(config.getStartUrl(), config.getDepthLimit(), config.getTargetLang());
+            crawl(config.getStartUrl(), 0);
             writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error during crawling: " + e.getMessage());
         }
     }
 
     private void crawl(String url, int depth) throws IOException {
         url = CrawlerUtils.removeFragment(url);
-        if (depth > depthLimit || visitedUrls.contains(url)) {
+        if (depth > config.getDepthLimit() || !visitedUrls.add(url)) {
             return;
         }
-        visitedUrls.add(url);
+
         Document doc = Jsoup.connect(url).get();
         LinkExtractor extractor = new LinkExtractor(doc);
         LinkResults links = extractor.validateLinks(extractor.extractLinks());
         Elements headings = extractor.extractHeadings();
 
-        if (isInFilter(domainFilter, url)) {
-            writer.writeContent(url, headings, links, depth, targetLang);
-
-            links.validLinks.forEach(link -> {
-                if (!visitedUrls.contains(link)) {
-                    try {
-                        crawl(link, depth + 1);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
+        if (isDomainMatch(url)) {
+            writer.writeContent(url, headings, links, depth, config.getTargetLang());
+            links.validLinks.forEach(link -> crawlIfNotVisited(link, depth));
         }
     }
 
-    private boolean isInFilter(String domainFilter, String url) {
-        Pattern pattern = Pattern.compile(domainFilter);
-        Matcher matcher = pattern.matcher(url);
-        return matcher.matches();
+    private void crawlIfNotVisited(String url, int depth) {
+        if (!visitedUrls.contains(url)) {
+            try {
+                crawl(url, depth + 1);
+            } catch (IOException e) {
+                System.err.println("Failed to crawl " + url + ": " + e.getMessage());
+            }
+        }
+    }
+
+    private boolean isDomainMatch(String url) {
+        return Pattern.matches(config.getDomainFilter(), url);
     }
 }
