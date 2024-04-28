@@ -24,9 +24,7 @@ public class LinkExtractor {
     }
 
     public LinkResults validateLinks(List<String> links) {
-
         HashSet<String> validLinks = new HashSet<>();
-
         HashSet<String> brokenLinks = new HashSet<>();
 
         for (var link : links) {

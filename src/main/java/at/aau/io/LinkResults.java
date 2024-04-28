@@ -1,7 +1,6 @@
 package at.aau.io;
 
 import java.util.HashSet;
-import java.util.List;
 
 public class LinkResults {
     public final HashSet<String> validLinks;

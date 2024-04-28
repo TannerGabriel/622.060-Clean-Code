@@ -7,9 +7,6 @@ public class CrawlerUtils {
         return Integer.parseInt(heading.tagName().substring(1));
     }
 
-
-
-
     public static String sanatizeURL(String url) {
         return removeTailingSlash(removeFragment(url));
     }
