@@ -44,7 +44,7 @@ public class MarkdownWriter {
     }
 
     public void writeHeadings(Elements headings, int depth, String targetLang) {
-        String indentation = "  ".repeat(depth);
+        String indentation = createIndentation(depth);
         boolean isValidLanguage = translator.isValidTargetLanguage(targetLang);
 
         if (!isValidLanguage) {
