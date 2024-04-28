@@ -71,8 +71,6 @@ public class Translator {
             builder.get();
         }
 
-        System.out.println(builder.build().toString());
-
         return builder.build();
     }
 
