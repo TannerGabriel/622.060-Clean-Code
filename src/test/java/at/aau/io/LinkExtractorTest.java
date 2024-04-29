@@ -1,14 +1,10 @@
 package at.aau.io;
 
-import at.aau.utils.CrawlerUtils;
-import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -20,7 +16,6 @@ public class LinkExtractorTest {
 
     Document mockDocument = mock(Document.class);
     LinkExtractor linkExtractor = new LinkExtractor(mockDocument);
-
 
     @Test
     public void testValidateLinks() {
