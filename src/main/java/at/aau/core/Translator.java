@@ -7,7 +7,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 public class Translator {
-    private OkHttpClient httpClient = new OkHttpClient();
+    protected OkHttpClient httpClient = new OkHttpClient();
 
     public String translate(String text, String targetLanguage) {
         if (!validateApiKey()) return text;
@@ -111,11 +111,11 @@ public class Translator {
         return true;
     }
 
-    private String getTranslateApiKey() {
+    protected String getTranslateApiKey() {
         return System.getenv("TRANSLATION_API_KEY");
     }
 
-    private boolean validateApiKey() {
+    protected boolean validateApiKey() {
         String apiKey = getTranslateApiKey();
         if (apiKey == null || apiKey.isEmpty()) {
             System.out.println("API key is not valid or not set.");
