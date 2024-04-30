@@ -4,6 +4,8 @@ import at.aau.core.CrawlerConfig;
 import at.aau.core.Crawler;
 
 import java.util.Scanner;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class Main {
     static Scanner scanner = new Scanner(System.in);
@@ -21,7 +23,7 @@ public class Main {
             return new CrawlerConfig(
                     getInput("Enter the starting URL:", Main::validateUrl),
                     getIntInput("Enter depth limit:", Main::validatePositiveNumber),
-                    getInput("Enter domain filter:", s -> !s.isEmpty()),
+                    getInput("Enter domain filter:", Main::validRegex),
                     getInput("Enter target Language:", s -> !s.isEmpty())
             );
         }
@@ -60,6 +62,15 @@ public class Main {
 
     protected static boolean validatePositiveNumber(int number) {
         return number >= 0;
+    }
+
+    protected static boolean validRegex(String regex) {
+        try {
+            Pattern.compile(regex);
+            return true;
+        } catch (PatternSyntaxException exception) {
+            return false;
+        }
     }
 
     @FunctionalInterface
