@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CrawlerConfigTest {
 
     @Test
-    public void testCrawlerConfigConstructor() {
+    void testCrawlerConfigConstructor() {
         String startUrl = "https://example.com";
         int depthLimit = 5;
         String domainFilter = "example.com";

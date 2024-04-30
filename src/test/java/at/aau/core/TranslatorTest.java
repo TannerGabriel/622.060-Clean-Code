@@ -42,7 +42,7 @@ public class TranslatorTest {
     }
 
     @AfterEach
-    public void teardown() {
+    void teardown() {
         System.setErr(originalOut);
     }
 

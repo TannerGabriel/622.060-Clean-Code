@@ -18,7 +18,7 @@ public class LinkExtractorTest {
     LinkExtractor linkExtractor = new LinkExtractor(mockDocument);
 
     @Test
-    public void testValidateLinks() {
+    void testValidateLinks() {
         LinkExtractor linkExtractorMock = mock(LinkExtractor.class,CALLS_REAL_METHODS);
         List<String> links = Arrays.asList("http://example.com/valid", "http://example.com/broken");
         when(linkExtractorMock.isBrokenLink("http://example.com/valid")).thenReturn(false);
@@ -34,7 +34,7 @@ public class LinkExtractorTest {
 
 
     @Test
-    public void testExtractHeadings() {
+    void testExtractHeadings() {
         when(mockDocument.select("h1, h2, h3, h4, h5, h6")).thenReturn(createHeadings());
 
         Elements headings = linkExtractor.extractHeadings();

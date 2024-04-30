@@ -31,7 +31,7 @@ class MarkdownWriterTest {
     }
 
     @Test
-    public void testPrintCrawlDetails() {
+    void testPrintCrawlDetails() {
         when(translator.getSourceLanguage(anyString())).thenReturn("english");
 
         markdownWriter.printCrawlDetails("https://example.com", 2, "es");
@@ -45,7 +45,7 @@ class MarkdownWriterTest {
     }
 
     @Test
-    public void testWriteContent() {
+    void testWriteContent() {
         setLinks();
 
         markdownWriter.writeContent("https://example.com", createHeadings(), linkResults, 1, "es");
@@ -60,7 +60,7 @@ class MarkdownWriterTest {
     }
 
     @Test
-    public void testWriteHeadingsWithValidLanguage() {
+    void testWriteHeadingsWithValidLanguage() {
         when(translator.isValidTargetLanguage("es")).thenReturn(true);
         when(translator.translate(eq("Hello"), anyString())).thenReturn("Translated Hello");
         when(translator.translate(eq("World"), anyString())).thenReturn("Translated World");
@@ -75,7 +75,7 @@ class MarkdownWriterTest {
     }
 
     @Test
-    public void testWriteHeadingsWithInvalidLanguage() {
+    void testWriteHeadingsWithInvalidLanguage() {
         when(translator.isValidTargetLanguage(anyString())).thenReturn(false);
 
         markdownWriter.writeHeadings(createHeadings(), 0, "invalidLang");
@@ -89,21 +89,21 @@ class MarkdownWriterTest {
     }
 
     @Test
-    public void testWriteLinksValid() {
+    void testWriteLinksValid() {
         linkResults.validLinks.add("https://example.com");
         markdownWriter.writeLinks(linkResults, 0);
         assertEquals("Valid link: <a href=\"https://example.com\">https://example.com</a>\n", stringWriter.toString());
     }
 
     @Test
-    public void testWriteLinksBroken() {
+    void testWriteLinksBroken() {
         linkResults.brokenLinks.add("https://example.org");
         markdownWriter.writeLinks(linkResults, 0);
         assertEquals("Broken link: <a href=\"https://example.org\">https://example.org</a>\n", stringWriter.toString());
     }
 
     @Test
-    public void testClose() throws IOException {
+    void testClose() throws IOException {
         PrintWriter mockPrintWriter = mock(PrintWriter.class);
         MarkdownWriter mdw = new MarkdownWriter("test.md");
         mdw.writer = mockPrintWriter;
