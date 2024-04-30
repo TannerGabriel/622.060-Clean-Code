@@ -28,7 +28,8 @@ class TranslatorTest {
 
     @Mock
     private OkHttpClient mockHttpClient;
-    @Mock private Call mockCall;
+    @Mock
+    private Call mockCall;
 
     @BeforeEach
     void setup() {
@@ -55,7 +56,7 @@ class TranslatorTest {
         when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
         when(mockCall.execute()).thenReturn(response);
 
-        assertEquals("Hello World!",translatorSpy.translate("Hallo Welt!", "en"));
+        assertEquals("Hello World!", translatorSpy.translate("Hallo Welt!", "en"));
     }
 
     @Test
@@ -68,7 +69,7 @@ class TranslatorTest {
         when(mockCall.execute()).thenReturn(response);
         when(translatorSpy.validateResponse(response)).thenReturn(false);
 
-        assertEquals("Hallo Welt!",translatorSpy.translate("Hallo Welt!", "en"));
+        assertEquals("Hallo Welt!", translatorSpy.translate("Hallo Welt!", "en"));
     }
 
 
@@ -101,7 +102,7 @@ class TranslatorTest {
         when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
         when(mockCall.execute()).thenReturn(response);
 
-        assertEquals("en",translatorSpy.getSourceLanguage("Hello World!"));
+        assertEquals("en", translatorSpy.getSourceLanguage("Hello World!"));
     }
 
     @Test
@@ -166,10 +167,10 @@ class TranslatorTest {
 
         Request request = translatorSpy.buildRequest("https://google.com", jsonPayload, "POST");
 
-        assertEquals("https://google.com/",request.url().toString());
-        assertEquals("API_TOKEN",request.header("X-RapidAPI-Key"));
-        assertEquals("google-translator9.p.rapidapi.com",request.header("X-RapidAPI-Host"));
-        assertEquals("application/json",request.header("content-type"));
+        assertEquals("https://google.com/", request.url().toString());
+        assertEquals("API_TOKEN", request.header("X-RapidAPI-Key"));
+        assertEquals("google-translator9.p.rapidapi.com", request.header("X-RapidAPI-Host"));
+        assertEquals("application/json", request.header("content-type"));
         assertEquals(requestBodyToString(expectedBody), requestBodyToString(request.body()));
     }
 
@@ -179,9 +180,9 @@ class TranslatorTest {
 
         Request request = translatorSpy.buildRequest("https://google.com", null, "GET");
 
-        assertEquals("https://google.com/",request.url().toString());
-        assertEquals("API_TOKEN",request.header("X-RapidAPI-Key"));
-        assertEquals("google-translator9.p.rapidapi.com",request.header("X-RapidAPI-Host"));
+        assertEquals("https://google.com/", request.url().toString());
+        assertEquals("API_TOKEN", request.header("X-RapidAPI-Key"));
+        assertEquals("google-translator9.p.rapidapi.com", request.header("X-RapidAPI-Host"));
     }
 
     @Test
@@ -202,7 +203,7 @@ class TranslatorTest {
     void testParseLanguageDetectionInvalidResponse() throws IOException {
         Response invalidResponse = createFailingResponse();
 
-        assertEquals("",translator.parseLanguageDetection(invalidResponse));
+        assertEquals("", translator.parseLanguageDetection(invalidResponse));
     }
 
 
@@ -257,126 +258,72 @@ class TranslatorTest {
     }
 
     private Response createValidTranslationResponse() {
-        Request request = new Request.Builder().url("https://google.com").build();
-
         JsonObject root = new JsonObject();
-
         JsonObject data = new JsonObject();
-        root.add("data", data);
-
         JsonArray translations = new JsonArray();
-        data.add("translations", translations);
-
         JsonObject translationDetails = new JsonObject();
         translationDetails.addProperty("translatedText", "Hello World!");
         translations.add(translationDetails);
+        data.add("translations", translations);
+        root.add("data", data);
 
-        ResponseBody responseBody = ResponseBody.create(
-                MediaType.get("application/json; charset=utf-8"),
-                root.toString()
-        );
-
-        return new Response.Builder()
-                .request(request)
-                .protocol(Protocol.HTTP_2)
-                .code(200)
-                .message("OK")
-                .body(responseBody)
-                .build();
+        return createMockResponse(200, "OK", root);
     }
 
     private Response createValidLanguageDetectionResponse() {
-        Request request = new Request.Builder().url("https://google.com").build();
-
         JsonObject root = new JsonObject();
         JsonObject data = new JsonObject();
-        root.add("data", data);
-
         JsonArray detections = new JsonArray();
-        data.add("detections", detections);
-
         JsonArray detectionDetails = new JsonArray();
-        detections.add(detectionDetails);
-
         JsonObject detection = new JsonObject();
         detection.addProperty("confidence", 1);
         detection.addProperty("language", "en");
         detection.addProperty("isReliable", false);
         detectionDetails.add(detection);
+        detections.add(detectionDetails);
+        data.add("detections", detections);
+        root.add("data", data);
 
-        ResponseBody responseBody = ResponseBody.create(
-                MediaType.get("application/json; charset=utf-8"),
-                root.toString()
-        );
-
-        return new Response.Builder()
-                .request(request)
-                .protocol(Protocol.HTTP_2)
-                .code(200)
-                .message("OK")
-                .body(responseBody)
-                .build();
+        return createMockResponse(200, "OK", root);
     }
 
     private Response createLanguageResponse() {
-        Request request = new Request.Builder().url("https://google.com").build();
-
         JsonObject root = new JsonObject();
         JsonObject data = new JsonObject();
         JsonArray languages = new JsonArray();
-
         JsonObject lang1 = new JsonObject();
         lang1.addProperty("language", "en");
         languages.add(lang1);
-
         JsonObject lang2 = new JsonObject();
         lang2.addProperty("language", "de");
         languages.add(lang2);
-
         data.add("languages", languages);
         root.add("data", data);
 
-        ResponseBody responseBody = ResponseBody.create(
-                MediaType.get("application/json; charset=utf-8"),
-                root.toString()
-        );
-
-        return new Response.Builder()
-                .request(request)
-                .protocol(Protocol.HTTP_2)
-                .code(200)
-                .message("OK")
-                .body(responseBody)
-                .build();
+        return createMockResponse(200, "OK", root);
     }
 
-
     private Response createSuccessfulResponse() {
-        Request request = new Request.Builder().url("https://google.com").build();
-
-        ResponseBody responseBody = ResponseBody.create(
-                MediaType.get("application/json; charset=utf-8"),
-                "{\"key\":\"value\"}"
-        );
-
-        return new Response.Builder()
-                .request(request)
-                .protocol(Protocol.HTTP_2)
-                .code(200)
-                .message("OK")
-                .body(responseBody)
-                .build();
+        JsonObject jsonResponse = new JsonObject();
+        jsonResponse.addProperty("key", "value");
+        return createMockResponse(200, "OK", jsonResponse);
     }
 
     private Response createFailingResponse() {
-        Request request = new Request.Builder().url("https://google.com").build();
+        return createMockResponse(400, "Bad request", new JsonObject());
+    }
 
+    private Response createMockResponse(int statusCode, String message, JsonObject jsonResponse) {
+        ResponseBody responseBody = ResponseBody.create(
+                MediaType.get("application/json; charset=utf-8"),
+                jsonResponse.toString()
+        );
         return new Response.Builder()
-                .request(request)
+                .request(new Request.Builder().url("https://google.com").build())
                 .protocol(Protocol.HTTP_2)
-                .code(400)
-                .message("Bad request")
-                .body(null)
+                .code(statusCode)
+                .message(message)
+                .body(responseBody)
                 .build();
     }
 
