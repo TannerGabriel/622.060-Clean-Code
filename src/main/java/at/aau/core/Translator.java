@@ -56,7 +56,7 @@ public class Translator {
         }
     }
 
-    private Request buildRequest(String url, JSONObject jsonPayload, String method) {
+    protected Request buildRequest(String url, JSONObject jsonPayload, String method) {
         MediaType mediaType = MediaType.parse("application/json");
 
         Request.Builder builder = new Request.Builder()
@@ -74,12 +74,12 @@ public class Translator {
         return builder.build();
     }
 
-    private String parseTranslation(Response response) throws IOException {
+    protected String parseTranslation(Response response) throws IOException {
         JSONObject jsonObject = new JSONObject(response.body().string());
         return jsonObject.getJSONObject("data").getJSONArray("translations").getJSONObject(0).getString("translatedText");
     }
 
-    private String parseLanguageDetection(Response response) throws IOException {
+    protected String parseLanguageDetection(Response response) throws IOException {
         if (!validateResponse(response)) {
             return "";
         }
@@ -88,7 +88,7 @@ public class Translator {
         return jsonObject.getJSONObject("data").getJSONArray("detections").getJSONArray(0).getJSONObject(0).getString("language");
     }
 
-    private boolean checkLanguageAvailability(Response response, String targetLanguage) throws IOException {
+    protected boolean checkLanguageAvailability(Response response, String targetLanguage) throws IOException {
         if (!validateResponse(response)) {
             return false;
         }
@@ -103,7 +103,7 @@ public class Translator {
         return false;
     }
 
-    private boolean validateResponse(Response response) {
+    protected boolean validateResponse(Response response) {
         if (!response.isSuccessful()) {
             System.out.println("Request failed with status code: " + response.code());
             return false;
