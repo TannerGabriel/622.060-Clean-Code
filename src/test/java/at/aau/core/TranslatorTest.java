@@ -98,17 +98,18 @@ class TranslatorTest {
 
         when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
         when(translatorSpy.validateApiKey()).thenReturn(true);
+        doReturn("I am a Heading").when(translatorSpy).getHeading("https://google.com");
         when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
         when(mockCall.execute()).thenReturn(response);
 
-        assertEquals("en",translatorSpy.getSourceLanguage("Hello World!"));
+        assertEquals("en",translatorSpy.getSourceLanguage("https://google.com"));
     }
 
     @Test
     void testGetSourceLanguageInvalidAPIKey() {
         when(translatorSpy.validateApiKey()).thenReturn(false);
 
-        assertEquals("", translatorSpy.getSourceLanguage("Hello World!"));
+        assertEquals("", translatorSpy.getSourceLanguage("https://google.com"));
     }
 
     @Test
@@ -117,10 +118,11 @@ class TranslatorTest {
 
         when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
         when(translatorSpy.validateApiKey()).thenReturn(true);
+        doReturn("I am a Heading").when(translatorSpy).getHeading("https://google.com");
         when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
         doThrow(toThrow).when(mockCall).execute();
 
-        assertEquals("", translatorSpy.getSourceLanguage("Hello World!"));
+        assertEquals("", translatorSpy.getSourceLanguage("https://google.com"));
         assertTrue(outContent.toString().contains("Language detection failed: Failed to connect"));
     }
 

@@ -28,10 +28,10 @@ public class MarkdownWriter {
         }
     }
 
-    public void printCrawlDetails(String startUrl, int depth, String targetLanguage) {
+    public void printCrawlDetails(String startUrl, int depth, String targetLanguage){
         writer.println("input: <a href=\"" + startUrl + "\">" + startUrl + "</a>");
         writer.println("<br> depth: " + depth);
-        writer.println("<br> source language: " + translator.getSourceLanguage("english"));
+        writer.println("<br> source language: " + translator.getSourceLanguage(startUrl));
         writer.println("<br> target language: " + targetLanguage);
         writer.println("<br> summary: ");
     }

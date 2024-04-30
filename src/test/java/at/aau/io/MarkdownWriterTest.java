@@ -38,7 +38,7 @@ class MarkdownWriterTest {
 
         String expectedOutput = "input: <a href=\"https://example.com\">https://example.com</a>\n" +
                 "<br> depth: 2\n" +
-                "<br> source language: english\n" + // This will need to be updated if translator is implemented
+                "<br> source language: english\n" +
                 "<br> target language: es\n" +
                 "<br> summary: \n";
         assertEquals(expectedOutput, stringWriter.toString());
