@@ -122,6 +122,13 @@ class MainTest {
         assertFalse(Main.validatePositiveNumber(-10));
     }
 
+    @Test
+    void testValidRegex() {
+        assertTrue(Main.validRegex("[\\s\\S]*"));
+        assertTrue(Main.validRegex(".*\\.google\\.com.*"));
+        assertFalse(Main.validRegex("*"));
+    }
+
     private void mockScanner(String testInput) {
         Main.scanner = new Scanner(new ByteArrayInputStream(testInput.getBytes()));
     }
