@@ -13,13 +13,18 @@ import java.util.HashSet;
 import java.util.regex.Pattern;
 
 public class Crawler {
-    private HashSet<String> visitedUrls = new HashSet<>();
+    HashSet<String> visitedUrls = new HashSet<>();
     private CrawlerConfig config;
     private MarkdownWriter writer;
 
     public Crawler(CrawlerConfig config) {
         this.config = config;
         this.writer = new MarkdownWriter("output.md");
+    }
+
+    public Crawler(CrawlerConfig config, MarkdownWriter writer) {
+        this.config = config;
+        this.writer = writer;
     }
 
     public void startCrawling() {
@@ -32,7 +37,7 @@ public class Crawler {
         }
     }
 
-    private void crawl(String url, int depth) throws IOException {
+    protected void crawl(String url, int depth) throws IOException {
         url = CrawlerUtils.removeFragment(url);
         if (depth > config.getDepthLimit() || !visitedUrls.add(url)) {
             return;
@@ -49,7 +54,7 @@ public class Crawler {
         }
     }
 
-    private void crawlIfNotVisited(String url, int depth) {
+    protected void crawlIfNotVisited(String url, int depth) {
         if (!visitedUrls.contains(url)) {
             try {
                 crawl(url, depth + 1);
@@ -59,7 +64,7 @@ public class Crawler {
         }
     }
 
-    private boolean isDomainMatch(String url) {
+    protected boolean isDomainMatch(String url) {
         return Pattern.matches(config.getDomainFilter(), url);
     }
 }
