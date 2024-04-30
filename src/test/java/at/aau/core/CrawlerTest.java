@@ -43,7 +43,7 @@ class CrawlerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        config = new CrawlerConfig("https://google.com", 3, ".*\\.google\\.com.*", "en");
+        config = new CrawlerConfig("https://google.com", 3, "^https?://([\\w\\d]+\\.)?google\\.com$", "en");
         crawler = new Crawler(config, writer);
         crawlerSpy = spy(crawler);
         System.setErr(new PrintStream(errContent));
@@ -62,23 +62,16 @@ class CrawlerTest {
         mockJsoup();
         doNothing().when(writer).printCrawlDetails(anyString(), anyInt(), anyString());
         doNothing().when(writer).close();
+        doNothing().when(crawlerSpy).crawl(anyString(), anyInt());
 
-        try (MockedConstruction<LinkExtractor> mocked = Mockito.mockConstruction(LinkExtractor.class,
-                (mock, context) -> {
-                    when(mock.extractLinks()).thenReturn(new ArrayList<>());
-                    when(mock.extractHeadings()).thenReturn(new Elements());
-                    when(mock.validateLinks(any())).thenReturn(links);
-                })) {
-
-            assertDoesNotThrow(() -> crawlerSpy.startCrawling());
-            verify(writer).printCrawlDetails("https://google.com", 3, "en");
-            verify(crawlerSpy).crawl("https://google.com", 0);
-            verify(writer).close();
-        }
+        assertDoesNotThrow(() -> crawlerSpy.startCrawling());
+        verify(writer).printCrawlDetails("https://google.com", 3, "en");
+        verify(crawlerSpy).crawl("https://google.com", 0);
+        verify(writer).close();
     }
 
     @Test
-    public void testStartCrawlingWithIOException() throws IOException {
+    public void testStartCrawlingFailedWithIOException() throws IOException {
         IOException toThrow = new IOException("Failed to connect");
         doThrow(toThrow).when(crawlerSpy).crawl(anyString(), anyInt());
 
@@ -89,7 +82,16 @@ class CrawlerTest {
 
     @Test
     public void testCrawlMethodSkipsWhenDepthLimitExceeded() throws IOException {
-        crawler.crawl("http://google.com", 4);
+        crawler.crawl("https://google.com", 4);
+
+        verifyNoInteractions(writer);
+    }
+
+    @Test
+    public void testCrawlMethodSkipsAlreadyVisitedURL() throws IOException {
+        crawler.visitedUrls.add("https://google.com");
+
+        crawler.crawl("https://google.com", 0);
 
         verifyNoInteractions(writer);
     }
@@ -97,25 +99,76 @@ class CrawlerTest {
     @Test
     public void testCrawlAddsUrlToVisited() throws IOException {
         mockJsoup();
+        when(crawlerSpy.isDomainMatch(anyString())).thenReturn(false);
         try (MockedConstruction<LinkExtractor> mocked = Mockito.mockConstruction(LinkExtractor.class,
                 (mock, context) -> {
                     when(mock.extractLinks()).thenReturn(new ArrayList<>());
                     when(mock.extractHeadings()).thenReturn(new Elements());
                     when(mock.validateLinks(any())).thenReturn(links);
                 })) {
-            crawler.crawl("https://google.com", 0);
-            assertTrue(crawler.visitedUrls.contains("https://google.com"));
+            crawlerSpy.crawl("https://google.com", 0);
+            assertTrue(crawlerSpy.visitedUrls.contains("https://google.com"));
         }
+    }
+
+    @Test
+    public void testCrawlWritesContent() throws IOException {
+        mockJsoup();
+        doNothing().when(writer).writeContent(anyString(), any(), any(), anyInt(), anyString());
+        doNothing().when(crawlerSpy).crawlIfNotVisited(anyString(), anyInt());
+
+        crawlerSpy.crawl("https://google.com", 0);
+
+        verify(writer).writeContent(eq("https://google.com"), any(Elements.class), any(LinkResults.class), eq(0), eq("en"));
+    }
+
+    @Test
+    public void testCrawlIfNotVisitedSuccessful() throws IOException {
+        doNothing().when(crawlerSpy).crawl(anyString(), anyInt());
+
+        crawlerSpy.crawlIfNotVisited("https://google.at", 0);
+
+        verify(crawlerSpy).crawl("https://google.at", 1);
+    }
+
+    @Test
+    public void testCrawlIfNotVisitedFailedToCrawl() throws IOException {
+        IOException toThrow = new IOException("Failed to connect");
+        doThrow(toThrow).when(crawlerSpy).crawl(anyString(), anyInt());
+
+        crawlerSpy.crawlIfNotVisited("https://google.com", 0);
+
+        assertTrue(errContent.toString().contains("Failed to crawl https://google.com: Failed to connect"));
+    }
+
+    @Test
+    public void testCrawlIfNotVisitedFailedVisited() throws IOException {
+        crawlerSpy.visitedUrls.add("https://google.com");
+
+        crawlerSpy.crawlIfNotVisited("https://google.com", 0);
+
+        verify(crawlerSpy, never()).crawl("https://google.com", 1);
     }
 
 
     @Test
-    void testDomainMatch() {
+    public void testDomainMatch() {
+        assertTrue(crawler.isDomainMatch("https://google.com"));
         assertTrue(crawler.isDomainMatch("https://service.google.com"));
         assertFalse(crawler.isDomainMatch("https://something.youtube.com"));
     }
 
+    @Test
+    public void testConstructor() {
+        Crawler crawler1 = new Crawler(config);
+        assertNotNull(crawler1, "Crawler should be successfully instantiated.");
+    }
+
     private void mockJsoup() throws IOException {
+        String htmlContent = "<!DOCTYPE html><html><head><title>Test Page</title></head>"
+                + "<body><h1>First Heading</h1><h2>Second Heading</h2><a href='https://example.com'>Example Link</a></body></html>";
+        Document document = Jsoup.parse(htmlContent);
+
         Connection mockedConnection = mock(Connection.class);
 
         when(mockedConnection.get()).thenAnswer(invocationOnMock -> {
@@ -126,7 +179,7 @@ class CrawlerTest {
                 case "notfound":
                     throw new IOException("Page not found");
                 default:
-                    return doc;
+                    return document;
             }
         });
 
