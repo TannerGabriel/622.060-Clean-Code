@@ -51,9 +51,7 @@ class TranslatorTest {
     void testTranslateValid() throws IOException {
         Response response = createValidTranslationResponse();
 
-        when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
-        when(translatorSpy.validateApiKey()).thenReturn(true);
-        when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
+        setupCommonMocks();
         when(mockCall.execute()).thenReturn(response);
 
         assertEquals("Hello World!", translatorSpy.translate("Hallo Welt!", "en"));
@@ -63,9 +61,7 @@ class TranslatorTest {
     void testTranslateRequestValidInvalidResponse() throws IOException {
         Response response = createValidTranslationResponse();
 
-        when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
-        when(translatorSpy.validateApiKey()).thenReturn(true);
-        when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
+        setupCommonMocks();
         when(mockCall.execute()).thenReturn(response);
         when(translatorSpy.validateResponse(response)).thenReturn(false);
 
@@ -84,9 +80,7 @@ class TranslatorTest {
     void testTranslateException() throws IOException {
         IOException toThrow = new IOException("Failed to connect");
 
-        when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
-        when(translatorSpy.validateApiKey()).thenReturn(true);
-        when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
+        setupCommonMocks();
         doThrow(toThrow).when(mockCall).execute();
 
         assertEquals("Hallo Welt!", translatorSpy.translate("Hallo Welt!", "en"));
@@ -97,9 +91,7 @@ class TranslatorTest {
     void testGetSourceLanguageValid() throws IOException {
         Response response = createValidLanguageDetectionResponse();
 
-        when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
-        when(translatorSpy.validateApiKey()).thenReturn(true);
-        when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
+        setupCommonMocks();
         when(mockCall.execute()).thenReturn(response);
 
         assertEquals("en", translatorSpy.getSourceLanguage("Hello World!"));
@@ -116,9 +108,7 @@ class TranslatorTest {
     void testGetSourceLanguageInvalidException() throws IOException {
         IOException toThrow = new IOException("Failed to connect");
 
-        when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
-        when(translatorSpy.validateApiKey()).thenReturn(true);
-        when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
+        setupCommonMocks();
         doThrow(toThrow).when(mockCall).execute();
 
         assertEquals("", translatorSpy.getSourceLanguage("Hello World!"));
@@ -130,9 +120,7 @@ class TranslatorTest {
     void testIsValidTargetLanguageValidRequest() throws IOException {
         Response response = createLanguageResponse();
 
-        when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
-        when(translatorSpy.validateApiKey()).thenReturn(true);
-        when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
+        setupCommonMocks();
         when(mockCall.execute()).thenReturn(response);
 
         assertTrue(translatorSpy.isValidTargetLanguage("en"));
@@ -149,9 +137,7 @@ class TranslatorTest {
     void testIsValidTargetLanguageException() throws IOException {
         IOException toThrow = new IOException("Failed to connect");
 
-        when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
-        when(translatorSpy.validateApiKey()).thenReturn(true);
-        when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
+        setupCommonMocks();
         doThrow(toThrow).when(mockCall).execute();
 
         assertFalse(translatorSpy.isValidTargetLanguage("en"));
@@ -160,10 +146,10 @@ class TranslatorTest {
 
     @Test
     void testBuildRequestPOST() throws IOException {
-        when(translatorSpy.getTranslateApiKey()).thenReturn("API_TOKEN");
         JSONObject jsonPayload = new JSONObject().put("q", "en");
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody expectedBody = RequestBody.create(jsonPayload.toString(), mediaType);
+        when(translatorSpy.getTranslateApiKey()).thenReturn("API_TOKEN");
 
         Request request = translatorSpy.buildRequest("https://google.com", jsonPayload, "POST");
 
@@ -332,4 +318,11 @@ class TranslatorTest {
         requestBody.writeTo(buffer);
         return buffer.readUtf8();
     }
+
+    private void setupCommonMocks() throws IOException {
+        when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
+        when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
+        when(translatorSpy.validateApiKey()).thenReturn(true);
+    }
+
 }
