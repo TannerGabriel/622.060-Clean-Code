@@ -98,7 +98,7 @@ class TranslatorTest {
 
         when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
         when(translatorSpy.validateApiKey()).thenReturn(true);
-        when(translatorSpy.getHeading("https://google.com")).thenReturn("I am a Heading");
+        doReturn("I am a Heading").when(translatorSpy).getHeading("https://google.com");
         when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
         when(mockCall.execute()).thenReturn(response);
 
@@ -118,7 +118,7 @@ class TranslatorTest {
 
         when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
         when(translatorSpy.validateApiKey()).thenReturn(true);
-        when(translatorSpy.getHeading("https://google.com")).thenReturn("I am a Heading");
+        doReturn("I am a Heading").when(translatorSpy).getHeading("https://google.com");
         when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
         doThrow(toThrow).when(mockCall).execute();
 
