@@ -3,7 +3,7 @@ package at.aau.core;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CrawlerConfigTest {
+class CrawlerConfigTest {
 
     @Test
     void testCrawlerConfigConstructor() {

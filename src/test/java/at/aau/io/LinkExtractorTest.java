@@ -12,7 +12,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-public class LinkExtractorTest {
+class LinkExtractorTest {
 
     Document mockDocument = mock(Document.class);
     LinkExtractor linkExtractor = new LinkExtractor(mockDocument);

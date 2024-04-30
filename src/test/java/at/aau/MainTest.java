@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MainTest {
+class MainTest {
 
     private final PrintStream originalSystemOut = System.out;
     private ByteArrayOutputStream testOut;

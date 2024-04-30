@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class TranslatorTest {
+class TranslatorTest {
     private Translator translator;
     private Translator translatorSpy;
 
