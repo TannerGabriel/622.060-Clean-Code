@@ -6,7 +6,7 @@ import at.aau.core.Crawler;
 import java.util.Scanner;
 
 public class Main {
-    private static final Scanner scanner = new Scanner(System.in);
+    static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
         CrawlerConfig config = getConfig(args);
@@ -14,7 +14,7 @@ public class Main {
         crawler.startCrawling();
     }
 
-    private static CrawlerConfig getConfig(String[] args) {
+    protected static CrawlerConfig getConfig(String[] args) {
         if (args.length == 4) {
             return new CrawlerConfig(args[0], Integer.parseInt(args[1]), args[2], args[3]);
         } else {
@@ -27,7 +27,7 @@ public class Main {
         }
     }
 
-    private static String getInput(String prompt, Validator<String> validator) {
+    protected static String getInput(String prompt, Validator<String> validator) {
         String input;
         while (true) {
             System.out.println(prompt);
@@ -39,7 +39,7 @@ public class Main {
         }
     }
 
-    private static int getIntInput(String prompt, Validator<Integer> validator) {
+    protected static int getIntInput(String prompt, Validator<Integer> validator) {
         while (true) {
             try {
                 String input = getInput(prompt, s -> s.matches("\\d+"));
@@ -54,11 +54,11 @@ public class Main {
         }
     }
 
-    private static boolean validateUrl(String url) {
+    protected static boolean validateUrl(String url) {
         return url.matches("https?://.*");
     }
 
-    private static boolean validatePositiveNumber(int number) {
+    protected static boolean validatePositiveNumber(int number) {
         return number >= 0;
     }
 
