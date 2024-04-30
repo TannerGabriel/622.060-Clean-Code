@@ -8,26 +8,34 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 public class TranslatorTest {
-
     private Translator translator;
     private Translator translatorSpy;
 
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final PrintStream originalOut = System.out;
 
+    @Mock
+    private OkHttpClient mockHttpClient;
+    @Mock private Call mockCall;
+
     @BeforeEach
     void setup() {
+        MockitoAnnotations.initMocks(this);
+
         translator = new Translator();
+        translator.httpClient = mockHttpClient;
         translatorSpy = spy(translator);
 
         System.setOut(new PrintStream(outContent));
@@ -36,6 +44,117 @@ public class TranslatorTest {
     @AfterEach
     public void teardown() {
         System.setErr(originalOut);
+    }
+
+    @Test
+    void testTranslateValid() throws IOException {
+        Response response = createValidTranslationResponse();
+
+        when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
+        when(translatorSpy.validateApiKey()).thenReturn(true);
+        when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
+        when(mockCall.execute()).thenReturn(response);
+
+        assertEquals("Hello World!",translatorSpy.translate("Hallo Welt!", "en"));
+    }
+
+    @Test
+    void testTranslateRequestValidInvalidResponse() throws IOException {
+        Response response = createValidTranslationResponse();
+
+        when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
+        when(translatorSpy.validateApiKey()).thenReturn(true);
+        when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
+        when(mockCall.execute()).thenReturn(response);
+        when(translatorSpy.validateResponse(response)).thenReturn(false);
+
+        assertEquals("Hallo Welt!",translatorSpy.translate("Hallo Welt!", "en"));
+    }
+
+
+    @Test
+    void testTranslateInvalidApiKey() {
+        when(translatorSpy.validateApiKey()).thenReturn(false);
+
+        assertEquals("Hallo Welt!", translatorSpy.translate("Hallo Welt!", "en"));
+    }
+
+    @Test
+    void testTranslateException() throws IOException {
+        IOException toThrow = new IOException("Failed to connect");
+
+        when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
+        when(translatorSpy.validateApiKey()).thenReturn(true);
+        when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
+        doThrow(toThrow).when(mockCall).execute();
+
+        assertEquals("Hallo Welt!", translatorSpy.translate("Hallo Welt!", "en"));
+        assertTrue(outContent.toString().contains("Translation failed: Failed to connect"));
+    }
+
+    @Test
+    void testGetSourceLanguageValid() throws IOException {
+        Response response = createValidLanguageDetectionResponse();
+
+        when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
+        when(translatorSpy.validateApiKey()).thenReturn(true);
+        when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
+        when(mockCall.execute()).thenReturn(response);
+
+        assertEquals("en",translatorSpy.getSourceLanguage("Hello World!"));
+    }
+
+    @Test
+    void testGetSourceLanguageInvalidAPIKey() {
+        when(translatorSpy.validateApiKey()).thenReturn(false);
+
+        assertEquals("", translatorSpy.getSourceLanguage("Hello World!"));
+    }
+
+    @Test
+    void testGetSourceLanguageInvalidException() throws IOException {
+        IOException toThrow = new IOException("Failed to connect");
+
+        when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
+        when(translatorSpy.validateApiKey()).thenReturn(true);
+        when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
+        doThrow(toThrow).when(mockCall).execute();
+
+        assertEquals("", translatorSpy.getSourceLanguage("Hello World!"));
+        assertTrue(outContent.toString().contains("Language detection failed: Failed to connect"));
+    }
+
+
+    @Test
+    void testIsValidTargetLanguageValidRequest() throws IOException {
+        Response response = createLanguageResponse();
+
+        when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
+        when(translatorSpy.validateApiKey()).thenReturn(true);
+        when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
+        when(mockCall.execute()).thenReturn(response);
+
+        assertTrue(translatorSpy.isValidTargetLanguage("en"));
+    }
+
+    @Test
+    void testIsValidTargetLanguageInvalidAPIKey() {
+        when(translatorSpy.validateApiKey()).thenReturn(false);
+
+        assertFalse(translatorSpy.isValidTargetLanguage("en"));
+    }
+
+    @Test
+    void testIsValidTargetLanguageException() throws IOException {
+        IOException toThrow = new IOException("Failed to connect");
+
+        when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
+        when(translatorSpy.validateApiKey()).thenReturn(true);
+        when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
+        doThrow(toThrow).when(mockCall).execute();
+
+        assertFalse(translatorSpy.isValidTargetLanguage("en"));
+        assertTrue(outContent.toString().contains("Failed to fetch available languages: Failed to connect"));
     }
 
     @Test
@@ -67,7 +186,7 @@ public class TranslatorTest {
 
     @Test
     void testParseTranslationSuccessful() throws IOException {
-        Response response = createValidTranslationRequest();
+        Response response = createValidTranslationResponse();
 
         assertEquals("Hello World!", translator.parseTranslation(response));
     }
@@ -137,7 +256,7 @@ public class TranslatorTest {
         assertTrue(outContent.toString().contains("API key is not valid or not set."));
     }
 
-    private Response createValidTranslationRequest() {
+    private Response createValidTranslationResponse() {
         Request request = new Request.Builder().url("https://google.com").build();
 
         JsonObject root = new JsonObject();
