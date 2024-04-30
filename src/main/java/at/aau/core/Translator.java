@@ -127,7 +127,7 @@ public class Translator {
         return true;
     }
 
-    private String getHeading(String url) throws IOException {
+    protected String getHeading(String url) throws IOException {
         Document doc = Jsoup.connect(url).get();
 
         LinkExtractor extractor = new LinkExtractor(doc);
