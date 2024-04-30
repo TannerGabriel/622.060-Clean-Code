@@ -8,21 +8,22 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 
 public class MarkdownWriter {
-    private PrintWriter writer;
-    private Translator translator;
+    protected PrintWriter writer;
+    protected Translator translator;
 
     public MarkdownWriter(String fileName) {
         this.translator = new Translator();
         initializeWriter(fileName);
     }
 
-    private void initializeWriter(String fileName) {
+    protected void initializeWriter(String fileName) {
         try {
             writer = new PrintWriter(Files.newBufferedWriter(Paths.get(fileName), StandardCharsets.UTF_8));
-        } catch (IOException e) {
+        } catch (IOException | InvalidPathException e) {
             System.err.println("Failed to initialize file writer: " + e.getMessage());
         }
     }
@@ -42,7 +43,7 @@ public class MarkdownWriter {
         writeLinks(links, depth);
     }
 
-    public void writeHeadings(Elements headings, int depth, String targetLang) {
+    protected void writeHeadings(Elements headings, int depth, String targetLang) {
         String indentation = createIndentation(depth);
         boolean isValidLanguage = translator.isValidTargetLanguage(targetLang);
 
@@ -58,7 +59,7 @@ public class MarkdownWriter {
         });
     }
 
-    public void writeLinks(LinkResults links, int depth) {
+    protected void writeLinks(LinkResults links, int depth) {
         String indentation = createIndentation(depth);
         links.validLinks.forEach(link -> writer.println(indentation + "Valid link: <a href=\"" + link + "\">" + link + "</a>"));
         links.brokenLinks.forEach(link -> writer.println(indentation + "Broken link: <a href=\"" + link + "\">" + link + "</a>"));
@@ -68,7 +69,7 @@ public class MarkdownWriter {
         writer.close();
     }
 
-    private String createIndentation(int depth) {
+    protected String createIndentation(int depth) {
         return "  ".repeat(depth);
     }
 }
