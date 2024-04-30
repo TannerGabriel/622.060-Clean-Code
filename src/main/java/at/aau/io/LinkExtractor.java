@@ -8,7 +8,6 @@ import org.jsoup.select.Elements;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class LinkExtractor {
     private Document document;
@@ -20,7 +19,7 @@ public class LinkExtractor {
     public List<String> extractLinks() {
         return document.select("a[href]").stream()
                 .map(element -> CrawlerUtils.sanitizeURL(element.absUrl("href")))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public LinkResults validateLinks(List<String> links) {

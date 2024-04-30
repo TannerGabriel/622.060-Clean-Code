@@ -31,7 +31,6 @@ public class MarkdownWriter {
     public void printCrawlDetails(String startUrl, int depth, String targetLanguage){
         writer.println("input: <a href=\"" + startUrl + "\">" + startUrl + "</a>");
         writer.println("<br> depth: " + depth);
-        // TODO: Use real text for source language
         writer.println("<br> source language: " + translator.getSourceLanguage(startUrl));
         writer.println("<br> target language: " + targetLanguage);
         writer.println("<br> summary: ");
@@ -66,7 +65,7 @@ public class MarkdownWriter {
         links.brokenLinks.forEach(link -> writer.println(indentation + "Broken link: <a href=\"" + link + "\">" + link + "</a>"));
     }
 
-    public void close() throws IOException {
+    public void close(){
         writer.close();
     }
 
