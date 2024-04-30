@@ -92,16 +92,17 @@ class TranslatorTest {
         Response response = createValidLanguageDetectionResponse();
 
         setupCommonMocks();
+        doReturn("I am a Heading").when(translatorSpy).getHeading("https://google.com");
         when(mockCall.execute()).thenReturn(response);
 
-        assertEquals("en", translatorSpy.getSourceLanguage("Hello World!"));
+        assertEquals("en",translatorSpy.getSourceLanguage("https://google.com"));
     }
 
     @Test
     void testGetSourceLanguageInvalidAPIKey() {
         when(translatorSpy.validateApiKey()).thenReturn(false);
 
-        assertEquals("", translatorSpy.getSourceLanguage("Hello World!"));
+        assertEquals("", translatorSpy.getSourceLanguage("https://google.com"));
     }
 
     @Test
@@ -109,9 +110,10 @@ class TranslatorTest {
         IOException toThrow = new IOException("Failed to connect");
 
         setupCommonMocks();
+        doReturn("I am a Heading").when(translatorSpy).getHeading("https://google.com");
         doThrow(toThrow).when(mockCall).execute();
 
-        assertEquals("", translatorSpy.getSourceLanguage("Hello World!"));
+        assertEquals("", translatorSpy.getSourceLanguage("https://google.com"));
         assertTrue(outContent.toString().contains("Language detection failed: Failed to connect"));
     }
 

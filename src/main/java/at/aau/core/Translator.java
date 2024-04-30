@@ -1,8 +1,11 @@
 package at.aau.core;
 
+import at.aau.io.LinkExtractor;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 
@@ -30,11 +33,11 @@ public class Translator {
         }
     }
 
-    public String getSourceLanguage(String text) {
+    public String getSourceLanguage(String url){
         if (!validateApiKey()) return "";
 
         try {
-            JSONObject jsonPayload = new JSONObject().put("q", text);
+            JSONObject jsonPayload = new JSONObject().put("q", getHeading(url));
 
             Response response = httpClient.newCall(buildRequest("https://google-translator9.p.rapidapi.com/v2/detect", jsonPayload, "POST")).execute();
             return parseLanguageDetection(response);
@@ -122,5 +125,13 @@ public class Translator {
             return false;
         }
         return true;
+    }
+
+    protected String getHeading(String url) throws IOException {
+        Document doc = Jsoup.connect(url).get();
+
+        LinkExtractor extractor = new LinkExtractor(doc);
+
+        return extractor.extractHeadings().get(0).text();
     }
 }
