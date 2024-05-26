@@ -17,7 +17,6 @@ import static org.mockito.Mockito.*;
 class MarkdownWriterTest {
 
     MarkdownWriter markdownWriter = new MarkdownWriter("test.md");
-    StringWriter stringWriter = new StringWriter();
     Translator translator = mock(Translator.class);;
     HashSet<String> validLinks = new HashSet<>();
     HashSet<String> brokenLinks = new HashSet<>();
@@ -40,7 +39,7 @@ class MarkdownWriterTest {
                 "<br> source language: english\n" +
                 "<br> target language: es\n" +
                 "<br> summary: \n";
-        assertEquals(expectedOutput, stringWriter.toString());
+        assertEquals(expectedOutput, markdownWriter.writer.toString());
     }
 
     @Test
@@ -55,7 +54,7 @@ class MarkdownWriterTest {
                 "  ## World\n" +
                 "  Valid link: <a href=\"https://example.com/valid\">https://example.com/valid</a>\n" +
                 "  Broken link: <a href=\"https://example.org/broken\">https://example.org/broken</a>\n";
-        assertEquals(expectedOutput, stringWriter.toString());
+        assertEquals(expectedOutput, markdownWriter.writer.toString());
     }
 
     @Test
@@ -70,7 +69,7 @@ class MarkdownWriterTest {
                 # Translated Hello
                 ## Translated World
                 """;
-        assertEquals(expectedOutput, stringWriter.toString());
+        assertEquals(expectedOutput, markdownWriter.writer.toString());
     }
 
     @Test
@@ -84,21 +83,21 @@ class MarkdownWriterTest {
                 ## World
                 """;
 
-        assertEquals(expectedOutput, stringWriter.toString());
+        assertEquals(expectedOutput, markdownWriter.writer.toString());
     }
 
     @Test
     void testAppendLinksValid() {
         linkResults.validLinks.add("https://example.com");
         markdownWriter.appendLinks(linkResults, 0);
-        assertEquals("Valid link: <a href=\"https://example.com\">https://example.com</a>\n", stringWriter.toString());
+        assertEquals("Valid link: <a href=\"https://example.com\">https://example.com</a>\n", markdownWriter.writer.toString());
     }
 
     @Test
     void testAppendLinksBroken() {
         linkResults.brokenLinks.add("https://example.org");
         markdownWriter.appendLinks(linkResults, 0);
-        assertEquals("Broken link: <a href=\"https://example.org\">https://example.org</a>\n", stringWriter.toString());
+        assertEquals("Broken link: <a href=\"https://example.org\">https://example.org</a>\n", markdownWriter.writer.toString());
     }
 
     @Test

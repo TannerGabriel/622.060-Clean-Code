@@ -61,13 +61,11 @@ class CrawlerTest {
     void testStartCrawlingSuccessful() throws IOException {
         mockJsoup();
         doNothing().when(writer).appendCrawlDetails(anyString(), anyInt(), anyString());
-        doNothing().when(writer).close();
         doNothing().when(crawlerSpy).crawl(anyString(), anyInt());
 
         assertDoesNotThrow(() -> crawlerSpy.startCrawling());
         verify(writer).appendCrawlDetails("https://google.com", 3, "en");
         verify(crawlerSpy).crawl("https://google.com", 0);
-        verify(writer).close();
     }
 
     @Test

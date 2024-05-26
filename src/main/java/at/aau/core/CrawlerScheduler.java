@@ -5,12 +5,13 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CrawlerScheduler {
-    private final List<Crawler> crawlers;
+    protected final List<Crawler> crawlers;
 
     public CrawlerScheduler(SchedulerConfig config) {
         crawlers = new ArrayList<>();
@@ -51,12 +52,16 @@ public class CrawlerScheduler {
 
     protected void printOutput(String content) {
         try {
-            PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("output.md"), StandardCharsets.UTF_8));
+            PrintWriter writer = createPrintWriter(Paths.get("output.md"));
             writer.println(content);
             writer.flush();
             writer.close();
         } catch (IOException | InvalidPathException e) {
             System.err.println("Failed to write output file: " + e.getMessage());
         }
+    }
+
+    protected PrintWriter createPrintWriter(Path path) throws IOException {
+        return new PrintWriter(Files.newBufferedWriter(path, StandardCharsets.UTF_8));
     }
 }

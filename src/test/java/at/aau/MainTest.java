@@ -34,7 +34,7 @@ class MainTest {
 
         SchedulerConfig config = Main.getConfig(args);
 
-        assertEquals("https://google.com", config.urls());
+        assertEquals("https://google.com", config.urls()[0]);
         assertEquals(3, config.depthLimit());
         assertEquals(".*\\.google\\.com.*", config.domainFilter());
         assertEquals("en", config.targetLang());
@@ -42,12 +42,12 @@ class MainTest {
 
     @Test
     void testGetConfigWithUserInput() {
-        mockScanner("https://google.com\n3\n.*\\.google\\.com.*\nen\n");
+        mockScanner("1\nhttps://google.com\n3\n.*\\.google\\.com.*\nen\n");
         String[] args = {};
 
         SchedulerConfig config = Main.getConfig(args);
 
-        assertEquals("https://google.com", config.urls());
+        assertEquals("https://google.com", config.urls()[0]);
         assertEquals(3, config.depthLimit());
         assertEquals(".*\\.google\\.com.*", config.domainFilter());
         assertEquals("en", config.targetLang());
