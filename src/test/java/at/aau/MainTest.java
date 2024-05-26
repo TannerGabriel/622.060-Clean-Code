@@ -1,6 +1,7 @@
 package at.aau;
 
 import at.aau.core.CrawlerConfig;
+import at.aau.core.SchedulerConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,9 +33,9 @@ class MainTest {
     void testGetConfigWithArgs() {
         String[] args = {"https://google.com", "3", ".*\\.google\\.com.*", "en"};
 
-        CrawlerConfig config = Main.getConfig(args);
+        SchedulerConfig config = Main.getConfig(args);
 
-        assertEquals("https://google.com", config.getStartUrl());
+        assertEquals("https://google.com", config.getUrls());
         assertEquals(3, config.getDepthLimit());
         assertEquals(".*\\.google\\.com.*", config.getDomainFilter());
         assertEquals("en", config.getTargetLang());
@@ -45,9 +46,9 @@ class MainTest {
         mockScanner("https://google.com\n3\n.*\\.google\\.com.*\nen\n");
         String[] args = {};
 
-        CrawlerConfig config = Main.getConfig(args);
+        SchedulerConfig config = Main.getConfig(args);
 
-        assertEquals("https://google.com", config.getStartUrl());
+        assertEquals("https://google.com", config.getUrls());
         assertEquals(3, config.getDepthLimit());
         assertEquals(".*\\.google\\.com.*", config.getDomainFilter());
         assertEquals("en", config.getTargetLang());

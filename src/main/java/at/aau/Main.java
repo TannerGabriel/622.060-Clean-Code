@@ -1,8 +1,10 @@
 package at.aau;
 
-import at.aau.core.CrawlerConfig;
-import at.aau.core.Crawler;
 
+import at.aau.core.CrawlerScheduler;
+import at.aau.core.SchedulerConfig;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -11,22 +13,33 @@ public class Main {
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        CrawlerConfig config = getConfig(args);
-        Crawler crawler = new Crawler(config);
-        crawler.startCrawling();
+        SchedulerConfig config = getConfig(args);
+        CrawlerScheduler crawlerScheduler = new CrawlerScheduler(config);
+        crawlerScheduler.startCrawlers();
     }
 
-    protected static CrawlerConfig getConfig(String[] args) {
+    protected static SchedulerConfig getConfig(String[] args) {
         if (args.length == 4) {
-            return new CrawlerConfig(args[0], Integer.parseInt(args[1]), args[2], args[3]);
+            return new SchedulerConfig(args[0].split(","), Integer.parseInt(args[1]), args[2], args[3]);
         } else {
-            return new CrawlerConfig(
-                    getInput("Enter the starting URL:", Main::validateUrl),
+            int urlAmount = getIntInput("Enter the amount of urls you want to scan:", Main::validatePositiveNumber);
+
+            return new SchedulerConfig(
+                    getInputs("Enter the starting URL:", urlAmount, Main::validateUrl),
                     getIntInput("Enter depth limit:", Main::validatePositiveNumber),
                     getInput("Enter domain filter:", Main::validRegex),
                     getInput("Enter target Language:", s -> !s.isEmpty())
             );
         }
+    }
+
+    protected static String[] getInputs(String prompt, int inputAmount, Validator<String> validator) {
+        List<String> inputs = new ArrayList<>();
+
+        for (int i = 0; i < inputAmount; i++) {
+            inputs.add(getInput(prompt, validator));
+        }
+        return inputs.toArray(String[]::new);
     }
 
     protected static String getInput(String prompt, Validator<String> validator) {

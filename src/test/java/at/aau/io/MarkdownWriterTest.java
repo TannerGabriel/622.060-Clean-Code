@@ -26,7 +26,7 @@ class MarkdownWriterTest {
 
     @BeforeEach
     void setUp() {
-        markdownWriter.writer = new PrintWriter(stringWriter);
+        markdownWriter.writer = new StringBuilder();
         markdownWriter.translator = translator;
     }
 
@@ -100,17 +100,6 @@ class MarkdownWriterTest {
         linkResults.brokenLinks.add("https://example.org");
         markdownWriter.writeLinks(linkResults, 0);
         assertEquals("Broken link: <a href=\"https://example.org\">https://example.org</a>\n", stringWriter.toString());
-    }
-
-    @Test
-    void testClose() throws IOException {
-        PrintWriter mockPrintWriter = mock(PrintWriter.class);
-        MarkdownWriter mdw = new MarkdownWriter("test.md");
-        mdw.writer = mockPrintWriter;
-
-        mdw.close();
-
-        verify(mockPrintWriter).close();
     }
 
     @Test

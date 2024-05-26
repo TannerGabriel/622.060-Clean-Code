@@ -12,7 +12,7 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 
 public class MarkdownWriter {
-    protected PrintWriter writer;
+    protected StringBuilder writer;
     protected Translator translator;
 
     public MarkdownWriter(String fileName) {
@@ -22,23 +22,23 @@ public class MarkdownWriter {
 
     protected void initializeWriter(String fileName) {
         try {
-            writer = new PrintWriter(Files.newBufferedWriter(Paths.get(fileName), StandardCharsets.UTF_8));
-        } catch (IOException | InvalidPathException e) {
-            System.err.println("Failed to initialize file writer: " + e.getMessage());
+            writer = new StringBuilder();
+        } catch (Exception e) {
+            System.err.println("Failed to initialize string builder: " + e.getMessage());
         }
     }
 
     public void printCrawlDetails(String startUrl, int depth, String targetLanguage){
-        writer.println("input: <a href=\"" + startUrl + "\">" + startUrl + "</a>");
-        writer.println("<br> depth: " + depth);
-        writer.println("<br> source language: " + translator.getSourceLanguage(startUrl));
-        writer.println("<br> target language: " + targetLanguage);
-        writer.println("<br> summary: ");
+        writer.append("input: <a href=\"").append(startUrl).append("\">").append(startUrl).append("</a>\n");
+        writer.append("<br> depth: ").append(depth).append("\n");
+        writer.append("<br> source language: ").append(translator.getSourceLanguage(startUrl)).append("\n");
+        writer.append("<br> target language: ").append(targetLanguage).append("\n");
+        writer.append("<br> summary: \n");
     }
 
     public void writeContent(String url, Elements headings, LinkResults links, int depth, String targetLang) {
-        writer.println("---");
-        writer.println("Crawled URL: <a href=\"" + url + "\">" + url + "</a>");
+        writer.append("---\n");
+        writer.append("Crawled URL: <a href=\"").append(url).append("\">").append(url).append("</a>\n");
         writeHeadings(headings, depth, targetLang);
         writeLinks(links, depth);
     }
@@ -55,21 +55,21 @@ public class MarkdownWriter {
             String headingText = isValidLanguage ?
                     translator.translate(heading.text(), targetLang) :
                     heading.text();
-            writer.println(indentation + "#".repeat(CrawlerUtils.getHeaderLevel(heading)) + " " + headingText);
+            writer.append(indentation).append("#".repeat(CrawlerUtils.getHeaderLevel(heading))).append(" ").append(headingText).append("\n");
         });
     }
 
     protected void writeLinks(LinkResults links, int depth) {
         String indentation = createIndentation(depth);
-        links.validLinks.forEach(link -> writer.println(indentation + "Valid link: <a href=\"" + link + "\">" + link + "</a>"));
-        links.brokenLinks.forEach(link -> writer.println(indentation + "Broken link: <a href=\"" + link + "\">" + link + "</a>"));
-    }
-
-    public void close(){
-        writer.close();
+        links.validLinks.forEach(link -> writer.append(indentation).append("Valid link: <a href=\"").append(link).append("\">").append(link).append("</a>\n"));
+        links.brokenLinks.forEach(link -> writer.append(indentation).append("Broken link: <a href=\"").append(link).append("\">").append(link).append("</a>\n"));
     }
 
     protected String createIndentation(int depth) {
         return "  ".repeat(depth);
+    }
+
+    public String getOutput() {
+        return writer.toString();
     }
 }

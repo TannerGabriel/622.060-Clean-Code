@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.regex.Pattern;
 
-public class Crawler {
+public class Crawler extends Thread {
     HashSet<String> visitedUrls = new HashSet<>();
     private CrawlerConfig config;
     private MarkdownWriter writer;
@@ -27,11 +27,16 @@ public class Crawler {
         this.writer = writer;
     }
 
+    @Override
+    public void run() {
+        super.run();
+        startCrawling();
+    }
+
     public void startCrawling() {
         try {
             writer.printCrawlDetails(config.getStartUrl(), config.getDepthLimit(), config.getTargetLang());
             crawl(config.getStartUrl(), 0);
-            writer.close();
         } catch (IOException e) {
             System.err.println("Error during crawling: " + e.getMessage());
         }
@@ -66,5 +71,9 @@ public class Crawler {
 
     protected boolean isDomainMatch(String url) {
         return Pattern.matches(config.getDomainFilter(), url);
+    }
+
+    public String getOutput() {
+        return writer.getOutput();
     }
 }
