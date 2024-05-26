@@ -5,9 +5,10 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class LinkExtractor {
     private Document document;
@@ -26,13 +27,23 @@ public class LinkExtractor {
         HashSet<String> validLinks = new HashSet<>();
         HashSet<String> brokenLinks = new HashSet<>();
 
-        for (var link : links) {
-            if (isBrokenLink(link)) {
-                brokenLinks.add(link);
-            } else {
-                validLinks.add(link);
+        List<CompletableFuture<Boolean>> linkValidationFutures = links.stream()
+                .map(this::isBrokenLinkAsync)
+                .toList();
+
+        for (int i = 0; i < links.size(); i++) {
+            try {
+                boolean isBroken = linkValidationFutures.get(i).get();
+                if (isBroken) {
+                    brokenLinks.add(links.get(i));
+                } else {
+                    validLinks.add(links.get(i));
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                brokenLinks.add(links.get(i));
             }
         }
+
         return new LinkResults(validLinks, brokenLinks);
     }
 
@@ -47,6 +58,10 @@ public class LinkExtractor {
         } catch (Exception e) {
             return true;
         }
+    }
+
+    public CompletableFuture<Boolean> isBrokenLinkAsync(String url) {
+        return CompletableFuture.supplyAsync(() -> isBrokenLink(url));
     }
 }
 
