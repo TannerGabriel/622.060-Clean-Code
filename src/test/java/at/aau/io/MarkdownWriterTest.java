@@ -5,8 +5,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.io.IOException;
-import java.io.PrintWriter;
+
 import java.io.StringWriter;
 import java.util.HashSet;
 
@@ -31,10 +30,10 @@ class MarkdownWriterTest {
     }
 
     @Test
-    void testPrintCrawlDetails() {
+    void testAppendCrawlDetails() {
         when(translator.getSourceLanguage(anyString())).thenReturn("english");
 
-        markdownWriter.printCrawlDetails("https://example.com", 2, "es");
+        markdownWriter.appendCrawlDetails("https://example.com", 2, "es");
 
         String expectedOutput = "input: <a href=\"https://example.com\">https://example.com</a>\n" +
                 "<br> depth: 2\n" +
@@ -45,10 +44,10 @@ class MarkdownWriterTest {
     }
 
     @Test
-    void testWriteContent() {
+    void testAppendContent() {
         setLinks();
 
-        markdownWriter.writeContent("https://example.com", createHeadings(), linkResults, 1, "es");
+        markdownWriter.appendContent("https://example.com", createHeadings(), linkResults, 1, "es");
 
         String expectedOutput = "---\n" +
                 "Crawled URL: <a href=\"https://example.com\">https://example.com</a>\n" +
@@ -60,12 +59,12 @@ class MarkdownWriterTest {
     }
 
     @Test
-    void testWriteHeadingsWithValidLanguage() {
+    void testAppendHeadingsWithValidLanguage() {
         when(translator.isValidTargetLanguage("es")).thenReturn(true);
         when(translator.translate(eq("Hello"), anyString())).thenReturn("Translated Hello");
         when(translator.translate(eq("World"), anyString())).thenReturn("Translated World");
 
-        markdownWriter.writeHeadings(createHeadings(), 0, "es");
+        markdownWriter.appendHeadings(createHeadings(), 0, "es");
 
         String expectedOutput = """
                 # Translated Hello
@@ -75,10 +74,10 @@ class MarkdownWriterTest {
     }
 
     @Test
-    void testWriteHeadingsWithInvalidLanguage() {
+    void testAppendHeadingsWithInvalidLanguage() {
         when(translator.isValidTargetLanguage(anyString())).thenReturn(false);
 
-        markdownWriter.writeHeadings(createHeadings(), 0, "invalidLang");
+        markdownWriter.appendHeadings(createHeadings(), 0, "invalidLang");
 
         String expectedOutput = """
                 # Hello
@@ -89,16 +88,16 @@ class MarkdownWriterTest {
     }
 
     @Test
-    void testWriteLinksValid() {
+    void testAppendLinksValid() {
         linkResults.validLinks.add("https://example.com");
-        markdownWriter.writeLinks(linkResults, 0);
+        markdownWriter.appendLinks(linkResults, 0);
         assertEquals("Valid link: <a href=\"https://example.com\">https://example.com</a>\n", stringWriter.toString());
     }
 
     @Test
-    void testWriteLinksBroken() {
+    void testAppendLinksBroken() {
         linkResults.brokenLinks.add("https://example.org");
-        markdownWriter.writeLinks(linkResults, 0);
+        markdownWriter.appendLinks(linkResults, 0);
         assertEquals("Broken link: <a href=\"https://example.org\">https://example.org</a>\n", stringWriter.toString());
     }
 

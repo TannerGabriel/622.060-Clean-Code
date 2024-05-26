@@ -4,31 +4,16 @@ import at.aau.core.Translator;
 import at.aau.utils.CrawlerUtils;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Paths;
-
 public class MarkdownWriter {
     protected StringBuilder writer;
     protected Translator translator;
 
     public MarkdownWriter(String fileName) {
         this.translator = new Translator();
-        initializeWriter(fileName);
+        this.writer = new StringBuilder();
     }
 
-    protected void initializeWriter(String fileName) {
-        try {
-            writer = new StringBuilder();
-        } catch (Exception e) {
-            System.err.println("Failed to initialize string builder: " + e.getMessage());
-        }
-    }
-
-    public void printCrawlDetails(String startUrl, int depth, String targetLanguage){
+    public void appendCrawlDetails(String startUrl, int depth, String targetLanguage){
         writer.append("input: <a href=\"").append(startUrl).append("\">").append(startUrl).append("</a>\n");
         writer.append("<br> depth: ").append(depth).append("\n");
         writer.append("<br> source language: ").append(translator.getSourceLanguage(startUrl)).append("\n");
@@ -36,14 +21,14 @@ public class MarkdownWriter {
         writer.append("<br> summary: \n");
     }
 
-    public void writeContent(String url, Elements headings, LinkResults links, int depth, String targetLang) {
+    public void appendContent(String url, Elements headings, LinkResults links, int depth, String targetLang) {
         writer.append("---\n");
         writer.append("Crawled URL: <a href=\"").append(url).append("\">").append(url).append("</a>\n");
-        writeHeadings(headings, depth, targetLang);
-        writeLinks(links, depth);
+        appendHeadings(headings, depth, targetLang);
+        appendLinks(links, depth);
     }
 
-    protected void writeHeadings(Elements headings, int depth, String targetLang) {
+    protected void appendHeadings(Elements headings, int depth, String targetLang) {
         String indentation = createIndentation(depth);
         boolean isValidLanguage = translator.isValidTargetLanguage(targetLang);
 
@@ -59,7 +44,7 @@ public class MarkdownWriter {
         });
     }
 
-    protected void writeLinks(LinkResults links, int depth) {
+    protected void appendLinks(LinkResults links, int depth) {
         String indentation = createIndentation(depth);
         links.validLinks.forEach(link -> writer.append(indentation).append("Valid link: <a href=\"").append(link).append("\">").append(link).append("</a>\n"));
         links.brokenLinks.forEach(link -> writer.append(indentation).append("Broken link: <a href=\"").append(link).append("\">").append(link).append("</a>\n"));

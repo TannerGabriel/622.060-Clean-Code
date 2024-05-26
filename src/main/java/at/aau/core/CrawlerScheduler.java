@@ -11,17 +11,10 @@ import java.util.List;
 
 public class CrawlerScheduler {
     private final List<Crawler> crawlers;
-    private String output;
 
     public CrawlerScheduler(SchedulerConfig config) {
         crawlers = new ArrayList<>();
         addCrawlerFromConfig(config);
-    }
-
-    public void startCrawler(CrawlerConfig config) {
-        Crawler crawler = new Crawler(config);
-        crawler.start();
-        crawlers.add(crawler);
     }
 
     public void startCrawlers() {
@@ -33,8 +26,8 @@ public class CrawlerScheduler {
     }
 
     protected void addCrawlerFromConfig(SchedulerConfig config) {
-        for (String url : config.getUrls()) {
-            crawlers.add(new Crawler(new CrawlerConfig(url, config.getDepthLimit(), config.getDomainFilter(), config.getTargetLang())));
+        for (String url : config.urls()) {
+            crawlers.add(new Crawler(new CrawlerConfig(url, config.depthLimit(), config.domainFilter(), config.targetLang())));
         }
     }
 
@@ -51,8 +44,7 @@ public class CrawlerScheduler {
     protected String getOutputFromCrawlers() {
         StringBuilder output = new StringBuilder();
         for (Crawler crawler : crawlers) {
-            output.append(crawler.getOutput());
-            output.append("\n\n");
+            output.append(crawler.getOutput()).append("\n\n");
         }
         return output.toString();
     }
@@ -64,7 +56,7 @@ public class CrawlerScheduler {
             writer.flush();
             writer.close();
         } catch (IOException | InvalidPathException e) {
-            System.err.println("Failed to initialize file writer: " + e.getMessage());
+            System.err.println("Failed to write output file: " + e.getMessage());
         }
     }
 }

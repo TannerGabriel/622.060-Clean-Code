@@ -35,8 +35,8 @@ public class Crawler extends Thread {
 
     public void startCrawling() {
         try {
-            writer.printCrawlDetails(config.getStartUrl(), config.getDepthLimit(), config.getTargetLang());
-            crawl(config.getStartUrl(), 0);
+            writer.appendCrawlDetails(config.startUrl(), config.depthLimit(), config.targetLang());
+            crawl(config.startUrl(), 0);
         } catch (IOException e) {
             System.err.println("Error during crawling: " + e.getMessage());
         }
@@ -44,7 +44,7 @@ public class Crawler extends Thread {
 
     protected void crawl(String url, int depth) throws IOException {
         url = CrawlerUtils.removeFragment(url);
-        if (depth > config.getDepthLimit() || !visitedUrls.add(url)) {
+        if (depth > config.depthLimit() || !visitedUrls.add(url)) {
             return;
         }
 
@@ -54,7 +54,7 @@ public class Crawler extends Thread {
         Elements headings = extractor.extractHeadings();
 
         if (isDomainMatch(url)) {
-            writer.writeContent(url, headings, links, depth, config.getTargetLang());
+            writer.appendContent(url, headings, links, depth, config.targetLang());
             links.validLinks.forEach(link -> crawlIfNotVisited(link, depth));
         }
     }
@@ -70,7 +70,7 @@ public class Crawler extends Thread {
     }
 
     protected boolean isDomainMatch(String url) {
-        return Pattern.matches(config.getDomainFilter(), url);
+        return Pattern.matches(config.domainFilter(), url);
     }
 
     public String getOutput() {
