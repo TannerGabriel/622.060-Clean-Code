@@ -1,6 +1,6 @@
 package at.aau;
 
-import at.aau.core.CrawlerConfig;
+import at.aau.core.SchedulerConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,25 +32,25 @@ class MainTest {
     void testGetConfigWithArgs() {
         String[] args = {"https://google.com", "3", ".*\\.google\\.com.*", "en"};
 
-        CrawlerConfig config = Main.getConfig(args);
+        SchedulerConfig config = Main.getConfig(args);
 
-        assertEquals("https://google.com", config.getStartUrl());
-        assertEquals(3, config.getDepthLimit());
-        assertEquals(".*\\.google\\.com.*", config.getDomainFilter());
-        assertEquals("en", config.getTargetLang());
+        assertEquals("https://google.com", config.urls()[0]);
+        assertEquals(3, config.depthLimit());
+        assertEquals(".*\\.google\\.com.*", config.domainFilter());
+        assertEquals("en", config.targetLang());
     }
 
     @Test
     void testGetConfigWithUserInput() {
-        mockScanner("https://google.com\n3\n.*\\.google\\.com.*\nen\n");
+        mockScanner("1\nhttps://google.com\n3\n.*\\.google\\.com.*\nen\n");
         String[] args = {};
 
-        CrawlerConfig config = Main.getConfig(args);
+        SchedulerConfig config = Main.getConfig(args);
 
-        assertEquals("https://google.com", config.getStartUrl());
-        assertEquals(3, config.getDepthLimit());
-        assertEquals(".*\\.google\\.com.*", config.getDomainFilter());
-        assertEquals("en", config.getTargetLang());
+        assertEquals("https://google.com", config.urls()[0]);
+        assertEquals(3, config.depthLimit());
+        assertEquals(".*\\.google\\.com.*", config.domainFilter());
+        assertEquals("en", config.targetLang());
         assertTrue(testOut.toString().contains("Enter the starting URL:"));
         assertTrue(testOut.toString().contains("Enter depth limit:"));
         assertTrue(testOut.toString().contains("Enter domain filter:"));

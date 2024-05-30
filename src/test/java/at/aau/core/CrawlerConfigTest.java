@@ -14,9 +14,9 @@ class CrawlerConfigTest {
 
         CrawlerConfig config = new CrawlerConfig(startUrl, depthLimit, domainFilter, targetLang);
 
-        assertEquals(startUrl, config.getStartUrl());
-        assertEquals(depthLimit, config.getDepthLimit());
-        assertEquals(domainFilter, config.getDomainFilter());
-        assertEquals(targetLang, config.getTargetLang());
+        assertEquals(startUrl, config.startUrl());
+        assertEquals(depthLimit, config.depthLimit());
+        assertEquals(domainFilter, config.domainFilter());
+        assertEquals(targetLang, config.targetLang());
     }
 }
