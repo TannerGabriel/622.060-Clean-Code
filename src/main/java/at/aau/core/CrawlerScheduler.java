@@ -40,7 +40,7 @@ public class CrawlerScheduler {
             try {
                 crawler.join();
             } catch (InterruptedException e) {
-                System.out.println("Error while joining thread: " + e);
+                logger.logError("Error while joining thread: " + e);
             }
         }
     }

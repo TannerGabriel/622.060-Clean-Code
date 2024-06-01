@@ -36,7 +36,6 @@ public class MarkdownWriter {
 
         if (!isValidLanguage) {
             logger.logError("Target language is invalid. Continuing with source language instead!");
-            System.out.println("Target language is invalid. Continuing with source language instead!");
         }
 
         headings.forEach(heading -> {
