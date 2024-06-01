@@ -64,10 +64,11 @@ public class CrawlerSchedulerTest {
     @Test
     public void testPrintOutput() throws IOException {
         String expectedContent = "Test Content";
-
-        crawlerScheduler.printOutput(expectedContent);
+        String expectedLog = "Test Log";
+        crawlerScheduler.printOutput(expectedContent,expectedLog);
 
         verify(mockWriter, times(1)).println(expectedContent);
+        verify(mockWriter, times(1)).println(expectedLog);
         verify(mockWriter, times(1)).flush();
         verify(mockWriter, times(1)).close();
     }
