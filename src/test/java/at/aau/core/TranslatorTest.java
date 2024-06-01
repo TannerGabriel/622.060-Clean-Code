@@ -1,5 +1,6 @@
 package at.aau.core;
 
+import at.aau.utils.Logger;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import okhttp3.*;
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 
@@ -23,8 +23,9 @@ class TranslatorTest {
     private Translator translator;
     private Translator translatorSpy;
 
-    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final PrintStream originalOut = System.out;
+
+    private final Logger logger = Logger.getInstance();
 
     @Mock
     private OkHttpClient mockHttpClient;
@@ -38,8 +39,6 @@ class TranslatorTest {
         translator = new Translator();
         translator.httpClient = mockHttpClient;
         translatorSpy = spy(translator);
-
-        System.setOut(new PrintStream(outContent));
     }
 
     @AfterEach
@@ -84,7 +83,7 @@ class TranslatorTest {
         doThrow(toThrow).when(mockCall).execute();
 
         assertEquals("Hallo Welt!", translatorSpy.translate("Hallo Welt!", "en"));
-        assertTrue(outContent.toString().contains("Translation failed: Failed to connect"));
+        assertTrue(logger.getLogsString().contains("Translation failed: Failed to connect"));
     }
 
     @Test
@@ -114,7 +113,7 @@ class TranslatorTest {
         doThrow(toThrow).when(mockCall).execute();
 
         assertEquals("", translatorSpy.getSourceLanguage("https://google.com"));
-        assertTrue(outContent.toString().contains("Language detection failed: Failed to connect"));
+        assertTrue(logger.getLogsString().contains("Language detection failed: Failed to connect"));
     }
 
 
@@ -143,7 +142,7 @@ class TranslatorTest {
         doThrow(toThrow).when(mockCall).execute();
 
         assertFalse(translatorSpy.isValidTargetLanguage("en"));
-        assertTrue(outContent.toString().contains("Failed to fetch available languages: Failed to connect"));
+        assertTrue(logger.getLogsString().contains("Failed to fetch available languages: Failed to connect"));
     }
 
     @Test
@@ -242,7 +241,7 @@ class TranslatorTest {
         when(translatorSpy.getTranslateApiKey()).thenReturn("");
 
         assertFalse(translatorSpy.validateApiKey());
-        assertTrue(outContent.toString().contains("API key is not valid or not set."));
+        assertTrue(logger.getLogsString().contains("API key is not valid or not set."));
     }
 
     private Response createValidTranslationResponse() {

@@ -4,6 +4,7 @@ import at.aau.io.LinkExtractor;
 import at.aau.io.LinkResults;
 import at.aau.io.MarkdownWriter;
 import at.aau.utils.CrawlerUtils;
+import at.aau.utils.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -13,6 +14,7 @@ import java.util.HashSet;
 import java.util.regex.Pattern;
 
 public class Crawler extends Thread {
+    private final Logger logger = Logger.getInstance();
     HashSet<String> visitedUrls = new HashSet<>();
     private CrawlerConfig config;
     private MarkdownWriter writer;
@@ -38,7 +40,7 @@ public class Crawler extends Thread {
             writer.appendCrawlDetails(config.startUrl(), config.depthLimit(), config.targetLang());
             crawl(config.startUrl(), 0);
         } catch (IOException e) {
-            System.err.println("Error during crawling: " + e.getMessage());
+            logger.logError("Error during crawling: " + e.getMessage());
         }
     }
 
@@ -64,7 +66,7 @@ public class Crawler extends Thread {
             try {
                 crawl(url, depth + 1);
             } catch (IOException e) {
-                System.err.println("Failed to crawl " + url + ": " + e.getMessage());
+                logger.logError("Failed to crawl " + url + ": " + e.getMessage());
             }
         }
     }

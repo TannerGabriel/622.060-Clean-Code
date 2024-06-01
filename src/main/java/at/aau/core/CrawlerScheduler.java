@@ -1,5 +1,7 @@
 package at.aau.core;
 
+import at.aau.utils.Logger;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -11,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CrawlerScheduler {
+    private static final Logger logger = Logger.getInstance();
     protected final List<Crawler> crawlers;
 
     public CrawlerScheduler(SchedulerConfig config) {
@@ -23,7 +26,7 @@ public class CrawlerScheduler {
             crawler.start();
         }
         waitForCrawlers();
-        printOutput(getOutputFromCrawlers());
+        printOutput(getOutputFromCrawlers(),logger.getLogsString());
     }
 
     protected void addCrawlerFromConfig(SchedulerConfig config) {
@@ -37,7 +40,7 @@ public class CrawlerScheduler {
             try {
                 crawler.join();
             } catch (InterruptedException e) {
-                System.out.println("Error while joining thread: " + e);
+                logger.logError("Error while joining thread: " + e);
             }
         }
     }
@@ -50,10 +53,11 @@ public class CrawlerScheduler {
         return output.toString();
     }
 
-    protected void printOutput(String content) {
+    protected void printOutput(String content,String logs) {
         try {
             PrintWriter writer = createPrintWriter(Paths.get("output.md"));
             writer.println(content);
+            writer.println(logs);
             writer.flush();
             writer.close();
         } catch (IOException | InvalidPathException e) {

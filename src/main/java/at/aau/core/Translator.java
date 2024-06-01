@@ -1,6 +1,7 @@
 package at.aau.core;
 
 import at.aau.io.LinkExtractor;
+import at.aau.utils.Logger;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -10,6 +11,7 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 
 public class Translator {
+    private static final Logger logger = Logger.getInstance();
     protected OkHttpClient httpClient = new OkHttpClient();
 
     public String translate(String text, String targetLanguage) {
@@ -28,7 +30,7 @@ public class Translator {
             }
             return parseTranslation(response);
         } catch (Exception e) {
-            System.out.println("Translation failed: " + e.getMessage());
+           logger.logError("Translation failed: " + e.getMessage());
             return text;
         }
     }
@@ -42,7 +44,7 @@ public class Translator {
             Response response = httpClient.newCall(buildRequest("https://google-translator9.p.rapidapi.com/v2/detect", jsonPayload, "POST")).execute();
             return parseLanguageDetection(response);
         } catch (Exception e) {
-            System.out.println("Language detection failed: " + e.getMessage());
+            logger.logError("Language detection failed: " + e.getMessage());
             return "";
         }
     }
@@ -54,7 +56,7 @@ public class Translator {
             Response response = httpClient.newCall(buildRequest("https://google-translator9.p.rapidapi.com/v2/languages", null, "GET")).execute();
             return checkLanguageAvailability(response, targetLanguage);
         } catch (Exception e) {
-            System.out.println("Failed to fetch available languages: " + e.getMessage());
+            logger.logError("Failed to fetch available languages: " + e.getMessage());
             return false;
         }
     }
@@ -108,7 +110,7 @@ public class Translator {
 
     protected boolean validateResponse(Response response) {
         if (!response.isSuccessful()) {
-            System.out.println("Request failed with status code: " + response.code());
+            logger.logError("Request failed with status code: " + response.code());
             return false;
         }
         return true;
@@ -121,7 +123,7 @@ public class Translator {
     protected boolean validateApiKey() {
         String apiKey = getTranslateApiKey();
         if (apiKey == null || apiKey.isEmpty()) {
-            System.out.println("API key is not valid or not set.");
+            logger.logError("API key is not valid or not set.");
             return false;
         }
         return true;

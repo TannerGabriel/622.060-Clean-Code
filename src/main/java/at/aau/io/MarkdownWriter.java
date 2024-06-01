@@ -2,9 +2,11 @@ package at.aau.io;
 
 import at.aau.core.Translator;
 import at.aau.utils.CrawlerUtils;
+import at.aau.utils.Logger;
 import org.jsoup.select.Elements;
 
 public class MarkdownWriter {
+    private static final Logger logger = Logger.getInstance();
     protected StringBuilder writer;
     protected Translator translator;
 
@@ -33,7 +35,7 @@ public class MarkdownWriter {
         boolean isValidLanguage = translator.isValidTargetLanguage(targetLang);
 
         if (!isValidLanguage) {
-            System.out.println("Target language is invalid. Continuing with source language instead!");
+            logger.logError("Target language is invalid. Continuing with source language instead!");
         }
 
         headings.forEach(heading -> {
