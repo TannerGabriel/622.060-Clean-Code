@@ -6,10 +6,6 @@ public class Logger {
     private static Logger logInstance;
     private final ArrayList<String> logs = new ArrayList<>();
 
-
-    private Logger() {
-    }
-
     public static Logger getInstance() {
         if (logInstance == null) {
             synchronized (Logger.class) {
