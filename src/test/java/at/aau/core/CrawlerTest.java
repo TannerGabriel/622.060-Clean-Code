@@ -3,6 +3,7 @@ package at.aau.core;
 import at.aau.io.LinkExtractor;
 import at.aau.io.LinkResults;
 import at.aau.io.MarkdownWriter;
+import at.aau.utils.Logger;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,11 +25,11 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 class CrawlerTest {
+    private static final Logger logger = Logger.getInstance();
     private Crawler crawler;
     private CrawlerConfig config;
     private Crawler crawlerSpy;
 
-    private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
     private final PrintStream originalErr = System.err;
 
     @Mock
@@ -46,7 +47,6 @@ class CrawlerTest {
         config = new CrawlerConfig("https://google.com", 3, "^https?://([\\w\\d]+\\.)?google\\.com$", "en");
         crawler = new Crawler(config, writer);
         crawlerSpy = spy(crawler);
-        System.setErr(new PrintStream(errContent));
     }
 
     @AfterEach
@@ -75,7 +75,7 @@ class CrawlerTest {
 
         crawlerSpy.startCrawling();
 
-        assertTrue(errContent.toString().contains("Error during crawling: Failed to connect"));
+        assertTrue(logger.getLogsString().contains("Error during crawling: Failed to connect"));
     }
 
     @Test
@@ -136,7 +136,7 @@ class CrawlerTest {
 
         crawlerSpy.crawlIfNotVisited("https://google.com", 0);
 
-        assertTrue(errContent.toString().contains("Failed to crawl https://google.com: Failed to connect"));
+        assertTrue(logger.getLogsString().contains("Failed to crawl https://google.com: Failed to connect"));
     }
 
     @Test
