@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class LoggerTest {
 
     @Test
-    public void testSingletonInstance() {
+    void testSingletonInstance() {
         Logger instance1 = Logger.getInstance();
         Logger instance2 = Logger.getInstance();
 
@@ -15,7 +15,7 @@ public class LoggerTest {
     }
 
     @Test
-    public void testLogError() {
+    void testLogError() {
         Logger logger = Logger.getInstance();
         logger.getLogs().clear(); // Ensure the log is clear before the test
 
@@ -28,7 +28,7 @@ public class LoggerTest {
     }
 
     @Test
-    public void testGetLogsString() {
+    void testGetLogsString() {
         Logger logger = Logger.getInstance();
         logger.getLogs().clear(); // Ensure the log is clear before the test
 
@@ -42,7 +42,7 @@ public class LoggerTest {
     }
 
     @Test
-    public void testThreadSafety() throws InterruptedException {
+    void testThreadSafety() throws InterruptedException {
         final Logger logger = Logger.getInstance();
         logger.getLogs().clear(); // Ensure the log is clear before the test
 
