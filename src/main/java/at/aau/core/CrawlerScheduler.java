@@ -26,7 +26,7 @@ public class CrawlerScheduler {
             crawler.start();
         }
         waitForCrawlers();
-        printOutput(getOutputFromCrawlers(),logger.getLogsString());
+        printOutput(getOutputFromCrawlers(), logger.getLogsString());
     }
 
     protected void addCrawlerFromConfig(SchedulerConfig config) {
@@ -53,13 +53,11 @@ public class CrawlerScheduler {
         return output.toString();
     }
 
-    protected void printOutput(String content,String logs) {
-        try {
-            PrintWriter writer = createPrintWriter(Paths.get("output.md"));
+    protected void printOutput(String content, String logs) {
+        try (PrintWriter writer = createPrintWriter(Paths.get("output.md"));) {
             writer.println(content);
             writer.println(logs);
             writer.flush();
-            writer.close();
         } catch (IOException | InvalidPathException e) {
             System.err.println("Failed to write output file: " + e.getMessage());
         }

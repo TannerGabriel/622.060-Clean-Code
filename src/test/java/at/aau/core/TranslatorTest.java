@@ -320,7 +320,7 @@ class TranslatorTest {
         return buffer.readUtf8();
     }
 
-    private void setupCommonMocks() throws IOException {
+    private void setupCommonMocks() {
         when(translatorSpy.getTranslateApiKey()).thenReturn("API_KEY");
         when(mockHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
         when(translatorSpy.validateApiKey()).thenReturn(true);

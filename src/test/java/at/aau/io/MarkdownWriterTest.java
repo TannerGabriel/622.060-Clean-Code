@@ -5,8 +5,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.io.StringWriter;
 import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;

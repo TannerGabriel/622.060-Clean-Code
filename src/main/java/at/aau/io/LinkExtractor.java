@@ -5,6 +5,8 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -55,7 +57,7 @@ public class LinkExtractor {
         try {
             int statusCode = Jsoup.connect(url).ignoreHttpErrors(true).timeout(3000).method(Connection.Method.HEAD).execute().statusCode();
             return statusCode == 404;
-        } catch (Exception e) {
+        } catch (IOException e) {
             return true;
         }
     }
@@ -64,4 +66,5 @@ public class LinkExtractor {
         return CompletableFuture.supplyAsync(() -> isBrokenLink(url));
     }
 }
+
 
