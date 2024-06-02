@@ -29,7 +29,7 @@ public class Translator {
                 return text;
             }
             return parseTranslation(response);
-        } catch (Exception e) {
+        } catch (IOException e) {
            logger.logError("Translation failed: " + e.getMessage());
             return text;
         }
@@ -43,7 +43,7 @@ public class Translator {
 
             Response response = httpClient.newCall(buildRequest("https://google-translator9.p.rapidapi.com/v2/detect", jsonPayload, "POST")).execute();
             return parseLanguageDetection(response);
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.logError("Language detection failed: " + e.getMessage());
             return "";
         }
@@ -55,7 +55,7 @@ public class Translator {
         try {
             Response response = httpClient.newCall(buildRequest("https://google-translator9.p.rapidapi.com/v2/languages", null, "GET")).execute();
             return checkLanguageAvailability(response, targetLanguage);
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.logError("Failed to fetch available languages: " + e.getMessage());
             return false;
         }
