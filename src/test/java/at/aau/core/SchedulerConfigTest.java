@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class SchedulerConfigTest {
+class SchedulerConfigTest {
     @Test
     void testSchedulerConfigConstructor() {
         String[] startUrl = {"https://example.com", "https://test.com"};

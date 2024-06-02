@@ -9,14 +9,14 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-public class CrawlerSchedulerTest {
+class CrawlerSchedulerTest {
     private SchedulerConfig mockConfig;
     private Crawler mockCrawler;
     private CrawlerScheduler crawlerScheduler;
     private PrintWriter mockWriter;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         mockConfig = mock(SchedulerConfig.class);
         when(mockConfig.urls()).thenReturn(new String[]{"http://example.com"});
         when(mockConfig.depthLimit()).thenReturn(2);
@@ -42,7 +42,7 @@ public class CrawlerSchedulerTest {
     }
 
     @Test
-    public void testStartCrawlers() {
+    void testStartCrawlers() {
         crawlerScheduler.startCrawlers();
 
         verify(mockCrawler, times(1)).start();
@@ -50,19 +50,19 @@ public class CrawlerSchedulerTest {
     }
 
     @Test
-    public void testAddCrawlerFromConfig() {
+    void testAddCrawlerFromConfig() {
         SchedulerConfig config = new SchedulerConfig(new String[]{"http://example.com"}, 2, "example.com", "en");
         CrawlerScheduler scheduler = new CrawlerScheduler(config);
         assertEquals(1, scheduler.crawlers.size());
     }
 
     @Test
-    public void testGetOutputFromCrawlers() {
+    void testGetOutputFromCrawlers() {
         assertEquals("Crawler Output\n\n", crawlerScheduler.getOutputFromCrawlers());
     }
 
     @Test
-    public void testPrintOutput() throws IOException {
+    void testPrintOutput() {
         String expectedContent = "Test Content";
         String expectedLog = "Test Log";
         crawlerScheduler.printOutput(expectedContent,expectedLog);

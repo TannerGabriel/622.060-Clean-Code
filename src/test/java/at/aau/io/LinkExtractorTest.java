@@ -49,9 +49,4 @@ class LinkExtractorTest {
         return headings;
     }
 
-    private Element createMockElementLink(String href) {
-        Element element = mock(Element.class);
-        when(element.absUrl("href")).thenReturn(href);
-        return element;
-    }
 }
