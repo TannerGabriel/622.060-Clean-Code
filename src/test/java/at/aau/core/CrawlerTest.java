@@ -1,5 +1,6 @@
 package at.aau.core;
 
+import at.aau.io.Heading;
 import at.aau.io.LinkExtractor;
 import at.aau.io.LinkResults;
 import at.aau.io.MarkdownWriter;
@@ -100,7 +101,7 @@ class CrawlerTest {
         try (MockedConstruction<LinkExtractor> mocked = Mockito.mockConstruction(LinkExtractor.class,
                 (mock, context) -> {
                     when(mock.extractLinks()).thenReturn(new ArrayList<>());
-                    when(mock.extractHeadings()).thenReturn(new Elements());
+                    when(mock.extractHeadings()).thenReturn(new Heading[]{});
                     when(mock.validateLinks(any())).thenReturn(links);
                 })) {
             crawlerSpy.crawl("https://google.com", 0);
@@ -116,7 +117,7 @@ class CrawlerTest {
 
         crawlerSpy.crawl("https://google.com", 0);
 
-        verify(writer).appendContent(eq("https://google.com"), any(Elements.class), any(LinkResults.class), eq(0), eq("en"));
+        verify(writer).appendContent(eq("https://google.com"), any(Heading[].class), any(LinkResults.class), eq(0), eq("en"));
     }
 
     @Test

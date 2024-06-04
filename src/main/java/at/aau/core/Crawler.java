@@ -1,5 +1,6 @@
 package at.aau.core;
 
+import at.aau.io.Heading;
 import at.aau.io.LinkExtractor;
 import at.aau.io.LinkResults;
 import at.aau.io.MarkdownWriter;
@@ -53,7 +54,7 @@ public class Crawler extends Thread {
         Document doc = Jsoup.connect(url).get();
         LinkExtractor extractor = new LinkExtractor(doc);
         LinkResults links = extractor.validateLinks(extractor.extractLinks());
-        Elements headings = extractor.extractHeadings();
+        Heading[] headings = extractor.extractHeadings();
 
         if (isDomainMatch(url)) {
             writer.appendContent(url, headings, links, depth, config.targetLang());

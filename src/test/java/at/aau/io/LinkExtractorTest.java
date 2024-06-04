@@ -37,9 +37,12 @@ class LinkExtractorTest {
     void testExtractHeadings() {
         when(mockDocument.select("h1, h2, h3, h4, h5, h6")).thenReturn(createHeadings());
 
-        Elements headings = linkExtractor.extractHeadings();
+        Heading[] headings = linkExtractor.extractHeadings();
 
-        assertEquals(createHeadings().toString(), headings.toString());
+        assertEquals(1, headings[0].headerLevel());
+        assertEquals(2, headings[1].headerLevel());
+        assertEquals("Hello", headings[0].text());
+        assertEquals("World", headings[1].text());
     }
 
     private Elements createHeadings(){

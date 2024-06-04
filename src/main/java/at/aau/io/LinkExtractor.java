@@ -4,6 +4,7 @@ import at.aau.utils.CrawlerUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -11,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+
+import static at.aau.utils.CrawlerUtils.getHeaderLevel;
 
 public class LinkExtractor {
     private Document document;
@@ -49,8 +52,13 @@ public class LinkExtractor {
         return new LinkResults(validLinks, brokenLinks);
     }
 
-    public Elements extractHeadings() {
-        return document.select("h1, h2, h3, h4, h5, h6");
+    public Heading[] extractHeadings() {
+        Elements headingElements = document.select("h1, h2, h3, h4, h5, h6");
+        Heading[] headings = new Heading[headingElements.size()];
+        for (int i = 0; i < headingElements.size(); i++) {
+            headings[i] = new Heading(getHeaderLevel(headingElements.get(i).outerHtml()),headingElements.get(i).text()) ;
+        }
+        return headings;
     }
 
     public boolean isBrokenLink(String url) {

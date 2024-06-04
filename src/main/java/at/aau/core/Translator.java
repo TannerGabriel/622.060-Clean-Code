@@ -134,6 +134,6 @@ public class Translator {
 
         LinkExtractor extractor = new LinkExtractor(doc);
 
-        return extractor.extractHeadings().get(0).text();
+        return extractor.extractHeadings()[0].text();
     }
 }
