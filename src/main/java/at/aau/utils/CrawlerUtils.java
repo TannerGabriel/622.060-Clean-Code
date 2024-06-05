@@ -1,7 +1,5 @@
 package at.aau.utils;
 
-import org.jsoup.nodes.Element;
-
 public class CrawlerUtils {
     public static int getHeaderLevel(String heading) {
         return Integer.parseInt(heading.substring(2,3));

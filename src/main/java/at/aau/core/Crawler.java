@@ -6,9 +6,10 @@ import at.aau.io.LinkResults;
 import at.aau.io.MarkdownWriter;
 import at.aau.utils.CrawlerUtils;
 import at.aau.utils.Logger;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
+
+import at.aau.wrapper.DocumentWrapper;
+import at.aau.wrapper.WebCrawler;
+import at.aau.wrapper.WebCrawlerImpl;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -19,6 +20,8 @@ public class Crawler extends Thread {
     HashSet<String> visitedUrls = new HashSet<>();
     private CrawlerConfig config;
     private MarkdownWriter writer;
+
+    private final WebCrawler webCrawler = new WebCrawlerImpl();
 
     public Crawler(CrawlerConfig config) {
         this.config = config;
@@ -51,10 +54,10 @@ public class Crawler extends Thread {
             return;
         }
 
-        Document doc = Jsoup.connect(url).get();
+        DocumentWrapper doc = webCrawler.get(url);
         LinkExtractor extractor = new LinkExtractor(doc);
-        LinkResults links = extractor.validateLinks(extractor.extractLinks());
-        Heading[] headings = extractor.extractHeadings();
+        LinkResults links = extractor.validateLinks();
+        Heading[] headings = doc.extractHeadings();
 
         if (isDomainMatch(url)) {
             writer.appendContent(url, headings, links, depth, config.targetLang());
