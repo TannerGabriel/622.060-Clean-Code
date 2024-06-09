@@ -16,31 +16,21 @@ import static org.mockito.Mockito.*;
 class LinkExtractorTest {
 
     DocumentWrapper mockDocument = mock(DocumentWrapper.class);
-    LinkExtractor linkExtractor = new LinkExtractor(mockDocument);
 
     @Test
     void testValidateLinks() {
-        LinkExtractor linkExtractorMock = mock(LinkExtractor.class,CALLS_REAL_METHODS);
+        LinkExtractor linkExtractorMock = spy(new LinkExtractor(mockDocument));
         List<String> links = Arrays.asList("http://example.com/valid", "http://example.com/broken");
         when(linkExtractorMock.isBrokenLink("http://example.com/valid")).thenReturn(false);
         when(linkExtractorMock.isBrokenLink("http://example.com/broken")).thenReturn(true);
-
 
         when(mockDocument.extractLinks()).thenReturn(links);
 
         LinkResults linkResults = linkExtractorMock.validateLinks();
 
-        HashSet<String> expectedValidLinks = new HashSet<>(Arrays.asList("http://example.com/valid"));
-        HashSet<String> expectedBrokenLinks = new HashSet<>(Arrays.asList("http://example.com/broken"));
+        HashSet<String> expectedValidLinks = new HashSet<>(List.of("http://example.com/valid"));
+        HashSet<String> expectedBrokenLinks = new HashSet<>(List.of("http://example.com/broken"));
         assertEquals(expectedValidLinks, linkResults.validLinks);
         assertEquals(expectedBrokenLinks, linkResults.brokenLinks);
     }
-
-    private Elements createHeadings(){
-        Elements headings = new Elements();
-        headings.add(new Element("h1").text("Hello"));
-        headings.add(new Element("h2").text("World"));
-        return headings;
-    }
-
 }

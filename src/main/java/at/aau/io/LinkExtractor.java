@@ -3,8 +3,6 @@ package at.aau.io;
 import at.aau.wrapper.DocumentWrapper;
 import at.aau.wrapper.WebCrawler;
 import at.aau.wrapper.WebCrawlerImpl;
-
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
