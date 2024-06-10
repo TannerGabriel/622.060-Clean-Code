@@ -63,8 +63,8 @@ class MarkdownWriterTest {
     @Test
     void testAppendHeadingsWithValidLanguage() {
         when(translator.isValidTargetLanguage()).thenReturn(true);
-        when(translator.translate(eq("Hello"))).thenReturn("Translated Hello");
-        when(translator.translate(eq("World"))).thenReturn("Translated World");
+        when(translator.translate("Hello")).thenReturn("Translated Hello");
+        when(translator.translate("World")).thenReturn("Translated World");
 
         markdownWriter.appendHeadings(createHeadings(), 0);
 
