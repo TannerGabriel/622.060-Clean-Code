@@ -8,13 +8,12 @@ import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MarkdownWriterTest {
 
-    MarkdownWriter markdownWriter = new MarkdownWriter();
+    MarkdownWriter markdownWriter = new MarkdownWriter("es");
     Translator translator = mock(Translator.class);;
     HashSet<String> validLinks = new HashSet<>();
     HashSet<String> brokenLinks = new HashSet<>();
@@ -29,8 +28,9 @@ class MarkdownWriterTest {
     @Test
     void testAppendCrawlDetails() {
         when(translator.getSourceLanguage(anyString())).thenReturn("english");
+        when(translator.getTargetLanguage()).thenReturn("es");
 
-        markdownWriter.appendCrawlDetails("https://example.com", 2, "es");
+        markdownWriter.appendCrawlDetails("https://example.com", 2);
 
         String expectedOutput = """
                 input: <a href="https://example.com">https://example.com</a>
@@ -46,7 +46,7 @@ class MarkdownWriterTest {
     void testAppendContent() {
         setLinks();
 
-        markdownWriter.appendContent("https://example.com", createHeadings(), linkResults, 1, "es");
+        markdownWriter.appendContent("https://example.com", createHeadings(), linkResults, 1);
 
         String expectedOutput = """
                 ---        
@@ -61,11 +61,11 @@ class MarkdownWriterTest {
 
     @Test
     void testAppendHeadingsWithValidLanguage() {
-        when(translator.isValidTargetLanguage("es")).thenReturn(true);
-        when(translator.translate(eq("Hello"), anyString())).thenReturn("Translated Hello");
-        when(translator.translate(eq("World"), anyString())).thenReturn("Translated World");
+        when(translator.isValidTargetLanguage()).thenReturn(true);
+        when(translator.translate("Hello")).thenReturn("Translated Hello");
+        when(translator.translate("World")).thenReturn("Translated World");
 
-        markdownWriter.appendHeadings(createHeadings(), 0, "es");
+        markdownWriter.appendHeadings(createHeadings(), 0);
 
         String expectedOutput = """
                 # Translated Hello
@@ -76,9 +76,9 @@ class MarkdownWriterTest {
 
     @Test
     void testAppendHeadingsWithInvalidLanguage() {
-        when(translator.isValidTargetLanguage(anyString())).thenReturn(false);
+        when(translator.isValidTargetLanguage()).thenReturn(false);
 
-        markdownWriter.appendHeadings(createHeadings(), 0, "invalidLang");
+        markdownWriter.appendHeadings(createHeadings(), 0);
 
         String expectedOutput = """
                 # Hello

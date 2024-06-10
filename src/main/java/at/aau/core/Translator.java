@@ -13,11 +13,15 @@ import java.io.IOException;
 
 public class Translator {
     private static final Logger logger = Logger.getInstance();
+    private final WebCrawler webCrawler = new WebCrawlerImpl();
+    private String targetLanguage;
     protected OkHttpClient httpClient = new OkHttpClient();
 
-    private final WebCrawler webCrawler = new WebCrawlerImpl();
+    public Translator(String targetLanguage) {
+        this.targetLanguage = targetLanguage;
+    }
 
-    public String translate(String text, String targetLanguage) {
+    public String translate(String text) {
         if (!validateApiKey()) return text;
 
         try {
@@ -33,12 +37,12 @@ public class Translator {
             }
             return parseTranslation(response);
         } catch (IOException e) {
-           logger.logError("Translation failed: " + e.getMessage());
+            logger.logError("Translation failed: " + e.getMessage());
             return text;
         }
     }
 
-    public String getSourceLanguage(String url){
+    public String getSourceLanguage(String url) {
         if (!validateApiKey()) return "";
 
         try {
@@ -52,7 +56,7 @@ public class Translator {
         }
     }
 
-    public boolean isValidTargetLanguage(String targetLanguage) {
+    public boolean isValidTargetLanguage() {
         if (!validateApiKey()) return false;
 
         try {
@@ -136,5 +140,9 @@ public class Translator {
         DocumentWrapper doc = webCrawler.get(url);
 
         return doc.extractHeadings()[0].text();
+    }
+
+    public String getTargetLanguage() {
+        return targetLanguage;
     }
 }
