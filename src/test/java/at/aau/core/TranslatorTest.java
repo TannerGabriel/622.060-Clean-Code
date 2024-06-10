@@ -34,7 +34,7 @@ class TranslatorTest {
 
     @BeforeEach
     void setup() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         translator = new Translator();
         translator.httpClient = mockHttpClient;
@@ -94,7 +94,7 @@ class TranslatorTest {
         doReturn("I am a Heading").when(translatorSpy).getHeading("https://google.com");
         when(mockCall.execute()).thenReturn(response);
 
-        assertEquals("en",translatorSpy.getSourceLanguage("https://google.com"));
+        assertEquals("en", translatorSpy.getSourceLanguage("https://google.com"));
     }
 
     @Test
@@ -302,8 +302,7 @@ class TranslatorTest {
 
     private Response createMockResponse(int statusCode, String message, JsonObject jsonResponse) {
         ResponseBody responseBody = ResponseBody.create(
-                MediaType.get("application/json; charset=utf-8"),
-                jsonResponse.toString()
+                jsonResponse.toString(), MediaType.get("application/json; charset=utf-8")
         );
         return new Response.Builder()
                 .request(new Request.Builder().url("https://google.com").build())

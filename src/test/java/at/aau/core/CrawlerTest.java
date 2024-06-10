@@ -43,7 +43,7 @@ class CrawlerTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         config = new CrawlerConfig("https://google.com", 3, "^https?://([\\w\\d]+\\.)?google\\.com$", "en");
         crawler = new Crawler(config, writer);
         crawlerSpy = spy(crawler);

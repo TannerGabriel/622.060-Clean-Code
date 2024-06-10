@@ -1,7 +1,5 @@
 package at.aau.wrapper;
 
-import org.jsoup.nodes.Document;
-
 import java.io.IOException;
 
 public interface WebCrawler {
