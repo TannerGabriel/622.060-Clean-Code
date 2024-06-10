@@ -1,9 +1,6 @@
 package at.aau.io;
 
 import at.aau.wrapper.DocumentWrapper;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

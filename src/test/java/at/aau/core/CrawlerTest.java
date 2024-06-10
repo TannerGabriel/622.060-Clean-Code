@@ -5,15 +5,13 @@ import at.aau.io.LinkExtractor;
 import at.aau.io.LinkResults;
 import at.aau.io.MarkdownWriter;
 import at.aau.utils.Logger;
-import at.aau.wrapper.DocumentWrapper;
 import at.aau.wrapper.DocumentWrapperImpl;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
 import java.io.IOException;

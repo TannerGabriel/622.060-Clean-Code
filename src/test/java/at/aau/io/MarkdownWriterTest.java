@@ -1,20 +1,20 @@
 package at.aau.io;
 
 import at.aau.core.Translator;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class MarkdownWriterTest {
 
-    MarkdownWriter markdownWriter = new MarkdownWriter("test.md");
+    MarkdownWriter markdownWriter = new MarkdownWriter("es");
     Translator translator = mock(Translator.class);;
     HashSet<String> validLinks = new HashSet<>();
     HashSet<String> brokenLinks = new HashSet<>();
@@ -33,11 +33,13 @@ class MarkdownWriterTest {
 
         markdownWriter.appendCrawlDetails("https://example.com", 2);
 
-        String expectedOutput = "input: <a href=\"https://example.com\">https://example.com</a>\n" +
-                "<br> depth: 2\n" +
-                "<br> source language: english\n" +
-                "<br> target language: es\n" +
-                "<br> summary: \n";
+        String expectedOutput = """
+                input: <a href="https://example.com">https://example.com</a>
+                <br> depth: 2
+                <br> source language: english
+                <br> target language: es
+                <br> summary:\s
+                """;
         assertEquals(expectedOutput, markdownWriter.writer.toString());
     }
 
@@ -47,12 +49,14 @@ class MarkdownWriterTest {
 
         markdownWriter.appendContent("https://example.com", createHeadings(), linkResults, 1);
 
-        String expectedOutput = "---\n" +
-                "Crawled URL: <a href=\"https://example.com\">https://example.com</a>\n" +
-                "  # Hello\n" +
-                "  ## World\n" +
-                "  Valid link: <a href=\"https://example.com/valid\">https://example.com/valid</a>\n" +
-                "  Broken link: <a href=\"https://example.org/broken\">https://example.org/broken</a>\n";
+        String expectedOutput = """
+                ---        
+                Crawled URL: <a href="https://example.com">https://example.com</a>   
+                  # Hello
+                  ## World
+                  Valid link: <a href="https://example.com/valid">https://example.com/valid</a>
+                  Broken link: <a href="https://example.org/broken">https://example.org/broken</a>
+                """;
         assertEquals(expectedOutput, markdownWriter.writer.toString());
     }
 
