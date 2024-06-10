@@ -1,6 +1,7 @@
 package at.aau.utils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Logger {
     private static Logger logInstance;
@@ -34,7 +35,7 @@ public class Logger {
         logs.add(errorMessage);
     }
 
-    public ArrayList<String> getLogs() {
+    public List<String> getLogs() {
         return logs;
     }
 }

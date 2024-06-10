@@ -8,7 +8,7 @@ public class MarkdownWriter {
     protected StringBuilder writer;
     protected Translator translator;
 
-    public MarkdownWriter(String fileName) {
+    public MarkdownWriter() {
         this.translator = new Translator();
         this.writer = new StringBuilder();
     }
