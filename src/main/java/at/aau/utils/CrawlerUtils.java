@@ -1,10 +1,8 @@
 package at.aau.utils;
 
-import org.jsoup.nodes.Element;
-
 public class CrawlerUtils {
-    public static int getHeaderLevel(Element heading) {
-        return Integer.parseInt(heading.tagName().substring(1));
+    public static int getHeaderLevel(String heading) {
+        return Integer.parseInt(heading.substring(2,3));
     }
 
     public static String sanitizeURL(String url) {

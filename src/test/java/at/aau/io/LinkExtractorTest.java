@@ -1,5 +1,6 @@
 package at.aau.io;
 
+import at.aau.wrapper.DocumentWrapper;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -14,39 +15,22 @@ import static org.mockito.Mockito.*;
 
 class LinkExtractorTest {
 
-    Document mockDocument = mock(Document.class);
-    LinkExtractor linkExtractor = new LinkExtractor(mockDocument);
+    DocumentWrapper mockDocument = mock(DocumentWrapper.class);
 
     @Test
     void testValidateLinks() {
-        LinkExtractor linkExtractorMock = mock(LinkExtractor.class,CALLS_REAL_METHODS);
+        LinkExtractor linkExtractorMock = spy(new LinkExtractor(mockDocument));
         List<String> links = Arrays.asList("http://example.com/valid", "http://example.com/broken");
         when(linkExtractorMock.isBrokenLink("http://example.com/valid")).thenReturn(false);
         when(linkExtractorMock.isBrokenLink("http://example.com/broken")).thenReturn(true);
 
-        LinkResults linkResults = linkExtractorMock.validateLinks(links);
+        when(mockDocument.extractLinks()).thenReturn(links);
 
-        HashSet<String> expectedValidLinks = new HashSet<>(Arrays.asList("http://example.com/valid"));
-        HashSet<String> expectedBrokenLinks = new HashSet<>(Arrays.asList("http://example.com/broken"));
+        LinkResults linkResults = linkExtractorMock.validateLinks();
+
+        HashSet<String> expectedValidLinks = new HashSet<>(List.of("http://example.com/valid"));
+        HashSet<String> expectedBrokenLinks = new HashSet<>(List.of("http://example.com/broken"));
         assertEquals(expectedValidLinks, linkResults.validLinks);
         assertEquals(expectedBrokenLinks, linkResults.brokenLinks);
     }
-
-
-    @Test
-    void testExtractHeadings() {
-        when(mockDocument.select("h1, h2, h3, h4, h5, h6")).thenReturn(createHeadings());
-
-        Elements headings = linkExtractor.extractHeadings();
-
-        assertEquals(createHeadings().toString(), headings.toString());
-    }
-
-    private Elements createHeadings(){
-        Elements headings = new Elements();
-        headings.add(new Element("h1").text("Hello"));
-        headings.add(new Element("h2").text("World"));
-        return headings;
-    }
-
 }

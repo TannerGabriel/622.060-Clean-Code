@@ -9,9 +9,9 @@ class CrawlerUtilsTest {
 
     @Test
     void testGetHeaderLevel() {
-        Element h1 = new Element("h1");
-        Element h2 = new Element("h2");
-        Element h3 = new Element("h3");
+        String h1 = "<h1></h1>";
+        String h2 = "<h2></h2>";
+        String h3 = "<h3></h3>";
 
         assertEquals(1, CrawlerUtils.getHeaderLevel(h1));
         assertEquals(2, CrawlerUtils.getHeaderLevel(h2));

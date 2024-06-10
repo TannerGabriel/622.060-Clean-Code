@@ -1,11 +1,8 @@
 package at.aau.io;
 
-import at.aau.utils.CrawlerUtils;
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-
+import at.aau.wrapper.DocumentWrapper;
+import at.aau.wrapper.WebCrawler;
+import at.aau.wrapper.WebCrawlerImpl;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
@@ -13,19 +10,16 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class LinkExtractor {
-    private Document document;
+    private DocumentWrapper document;
+    private final WebCrawler webCrawler = new WebCrawlerImpl();
 
-    public LinkExtractor(Document document) {
+    public LinkExtractor(DocumentWrapper document) {
         this.document = document;
     }
 
-    public List<String> extractLinks() {
-        return document.select("a[href]").stream()
-                .map(element -> CrawlerUtils.sanitizeURL(element.absUrl("href")))
-                .toList();
-    }
+    public LinkResults validateLinks() {
+        List<String> links = document.extractLinks();
 
-    public LinkResults validateLinks(List<String> links) {
         HashSet<String> validLinks = new HashSet<>();
         HashSet<String> brokenLinks = new HashSet<>();
 
@@ -49,13 +43,9 @@ public class LinkExtractor {
         return new LinkResults(validLinks, brokenLinks);
     }
 
-    public Elements extractHeadings() {
-        return document.select("h1, h2, h3, h4, h5, h6");
-    }
-
     public boolean isBrokenLink(String url) {
         try {
-            int statusCode = Jsoup.connect(url).ignoreHttpErrors(true).timeout(3000).method(Connection.Method.HEAD).execute().statusCode();
+            int statusCode = webCrawler.getStatusCode(url);
             return statusCode == 404;
         } catch (IOException e) {
             return true;

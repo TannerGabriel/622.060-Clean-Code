@@ -1,9 +1,12 @@
 package at.aau.core;
 
+import at.aau.io.Heading;
 import at.aau.io.LinkExtractor;
 import at.aau.io.LinkResults;
 import at.aau.io.MarkdownWriter;
 import at.aau.utils.Logger;
+import at.aau.wrapper.DocumentWrapper;
+import at.aau.wrapper.DocumentWrapperImpl;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -99,10 +102,17 @@ class CrawlerTest {
         when(crawlerSpy.isDomainMatch(anyString())).thenReturn(false);
         try (MockedConstruction<LinkExtractor> mocked = Mockito.mockConstruction(LinkExtractor.class,
                 (mock, context) -> {
-                    when(mock.extractLinks()).thenReturn(new ArrayList<>());
-                    when(mock.extractHeadings()).thenReturn(new Elements());
-                    when(mock.validateLinks(any())).thenReturn(links);
+                    when(mock.validateLinks()).thenReturn(links);
                 })) {
+
+            try (MockedConstruction<DocumentWrapperImpl> mockedDw = Mockito.mockConstruction(DocumentWrapperImpl.class,
+                    (mock, context) -> {
+                        when(mock.extractLinks()).thenReturn(new ArrayList<>());
+                        when(mock.extractHeadings()).thenReturn(new Heading[]{});
+                    })) {
+                crawlerSpy.crawl("https://google.com", 0);
+                assertTrue(crawlerSpy.visitedUrls.contains("https://google.com"));
+            }
             crawlerSpy.crawl("https://google.com", 0);
             assertTrue(crawlerSpy.visitedUrls.contains("https://google.com"));
         }
@@ -116,7 +126,7 @@ class CrawlerTest {
 
         crawlerSpy.crawl("https://google.com", 0);
 
-        verify(writer).appendContent(eq("https://google.com"), any(Elements.class), any(LinkResults.class), eq(0), eq("en"));
+        verify(writer).appendContent(eq("https://google.com"), any(Heading[].class), any(LinkResults.class), eq(0), eq("en"));
     }
 
     @Test

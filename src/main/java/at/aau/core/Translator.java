@@ -1,18 +1,21 @@
 package at.aau.core;
 
-import at.aau.io.LinkExtractor;
 import at.aau.utils.Logger;
+
+import at.aau.wrapper.DocumentWrapper;
+import at.aau.wrapper.WebCrawler;
+import at.aau.wrapper.WebCrawlerImpl;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 
 public class Translator {
     private static final Logger logger = Logger.getInstance();
     protected OkHttpClient httpClient = new OkHttpClient();
+
+    private final WebCrawler webCrawler = new WebCrawlerImpl();
 
     public String translate(String text, String targetLanguage) {
         if (!validateApiKey()) return text;
@@ -130,10 +133,8 @@ public class Translator {
     }
 
     protected String getHeading(String url) throws IOException {
-        Document doc = Jsoup.connect(url).get();
+        DocumentWrapper doc = webCrawler.get(url);
 
-        LinkExtractor extractor = new LinkExtractor(doc);
-
-        return extractor.extractHeadings().get(0).text();
+        return doc.extractHeadings()[0].text();
     }
 }

@@ -105,10 +105,10 @@ class MarkdownWriterTest {
         assertEquals("    ", markdownWriter.createIndentation(2));
     }
 
-    private Elements createHeadings(){
-        Elements headings = new Elements();
-        headings.add(new Element("h1").text("Hello"));
-        headings.add(new Element("h2").text("World"));
+    private Heading[] createHeadings(){
+        Heading[] headings = new Heading[2];
+        headings[0] = new Heading(1,"Hello");
+        headings[1] = new Heading(2,"World");
         return headings;
     }
 

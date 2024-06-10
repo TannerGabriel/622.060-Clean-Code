@@ -1,9 +1,7 @@
 package at.aau.io;
 
 import at.aau.core.Translator;
-import at.aau.utils.CrawlerUtils;
 import at.aau.utils.Logger;
-import org.jsoup.select.Elements;
 
 public class MarkdownWriter {
     private static final Logger logger = Logger.getInstance();
@@ -23,14 +21,14 @@ public class MarkdownWriter {
         writer.append("<br> summary: \n");
     }
 
-    public void appendContent(String url, Elements headings, LinkResults links, int depth, String targetLang) {
+    public void appendContent(String url, Heading[] headings, LinkResults links, int depth, String targetLang) {
         writer.append("---\n");
         writer.append("Crawled URL: <a href=\"").append(url).append("\">").append(url).append("</a>\n");
         appendHeadings(headings, depth, targetLang);
         appendLinks(links, depth);
     }
 
-    protected void appendHeadings(Elements headings, int depth, String targetLang) {
+    protected void appendHeadings(Heading[] headings, int depth, String targetLang) {
         String indentation = createIndentation(depth);
         boolean isValidLanguage = translator.isValidTargetLanguage(targetLang);
 
@@ -38,12 +36,12 @@ public class MarkdownWriter {
             logger.logError("Target language is invalid. Continuing with source language instead!");
         }
 
-        headings.forEach(heading -> {
+        for(Heading heading : headings){
             String headingText = isValidLanguage ?
                     translator.translate(heading.text(), targetLang) :
                     heading.text();
-            writer.append(indentation).append("#".repeat(CrawlerUtils.getHeaderLevel(heading))).append(" ").append(headingText).append("\n");
-        });
+            writer.append(indentation).append("#".repeat(heading.headerLevel())).append(" ").append(headingText).append("\n");
+        }
     }
 
     protected void appendLinks(LinkResults links, int depth) {
@@ -55,8 +53,8 @@ public class MarkdownWriter {
     protected String createIndentation(int depth) {
         return "  ".repeat(depth);
     }
-
     public String getOutput() {
         return writer.toString();
     }
+
 }
