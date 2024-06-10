@@ -25,7 +25,7 @@ public class Crawler extends Thread {
 
     public Crawler(CrawlerConfig config) {
         this.config = config;
-        this.writer = new MarkdownWriter("output.md");
+        this.writer = new MarkdownWriter();
     }
 
     public Crawler(CrawlerConfig config, MarkdownWriter writer) {

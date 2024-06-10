@@ -22,7 +22,7 @@ class LoggerTest {
         String errorMessage = "This is an error message";
         logger.logError(errorMessage);
 
-        ArrayList<String> logs = logger.getLogs();
+        ArrayList<String> logs = (ArrayList<String>) logger.getLogs();
         assertEquals(1, logs.size());
         assertEquals(errorMessage, logs.get(0));
     }
@@ -55,7 +55,7 @@ class LoggerTest {
         thread1.join();
         thread2.join();
 
-        ArrayList<String> logs = logger.getLogs();
+        ArrayList<String> logs = (ArrayList<String>) logger.getLogs();
         assertEquals(2, logs.size());
         assertTrue(logs.contains("Error from thread 1"));
         assertTrue(logs.contains("Error from thread 2"));
