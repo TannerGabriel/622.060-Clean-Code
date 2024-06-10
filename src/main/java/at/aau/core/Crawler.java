@@ -25,7 +25,7 @@ public class Crawler extends Thread {
 
     public Crawler(CrawlerConfig config) {
         this.config = config;
-        this.writer = new MarkdownWriter("output.md");
+        this.writer = new MarkdownWriter(config.targetLang());
     }
 
     public Crawler(CrawlerConfig config, MarkdownWriter writer) {
@@ -41,7 +41,7 @@ public class Crawler extends Thread {
 
     public void startCrawling() {
         try {
-            writer.appendCrawlDetails(config.startUrl(), config.depthLimit(), config.targetLang());
+            writer.appendCrawlDetails(config.startUrl(), config.depthLimit());
             crawl(config.startUrl(), 0);
         } catch (IOException e) {
             logger.logError("Error during crawling: " + e.getMessage());
@@ -60,7 +60,7 @@ public class Crawler extends Thread {
         Heading[] headings = doc.extractHeadings();
 
         if (isDomainMatch(url)) {
-            writer.appendContent(url, headings, links, depth, config.targetLang());
+            writer.appendContent(url, headings, links, depth);
             links.validLinks.forEach(link -> crawlIfNotVisited(link, depth));
         }
     }

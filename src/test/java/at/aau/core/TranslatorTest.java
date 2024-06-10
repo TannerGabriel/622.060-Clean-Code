@@ -36,7 +36,7 @@ class TranslatorTest {
     void setup() {
         MockitoAnnotations.initMocks(this);
 
-        translator = new Translator();
+        translator = new Translator("en");
         translator.httpClient = mockHttpClient;
         translatorSpy = spy(translator);
     }
@@ -53,7 +53,7 @@ class TranslatorTest {
         setupCommonMocks();
         when(mockCall.execute()).thenReturn(response);
 
-        assertEquals("Hello World!", translatorSpy.translate("Hallo Welt!", "en"));
+        assertEquals("Hello World!", translatorSpy.translate("Hallo Welt!"));
     }
 
     @Test
@@ -64,7 +64,7 @@ class TranslatorTest {
         when(mockCall.execute()).thenReturn(response);
         when(translatorSpy.validateResponse(response)).thenReturn(false);
 
-        assertEquals("Hallo Welt!", translatorSpy.translate("Hallo Welt!", "en"));
+        assertEquals("Hallo Welt!", translatorSpy.translate("Hallo Welt!"));
     }
 
 
@@ -72,7 +72,7 @@ class TranslatorTest {
     void testTranslateInvalidApiKey() {
         when(translatorSpy.validateApiKey()).thenReturn(false);
 
-        assertEquals("Hallo Welt!", translatorSpy.translate("Hallo Welt!", "en"));
+        assertEquals("Hallo Welt!", translatorSpy.translate("Hallo Welt!"));
     }
 
     @Test
@@ -82,7 +82,7 @@ class TranslatorTest {
         setupCommonMocks();
         doThrow(toThrow).when(mockCall).execute();
 
-        assertEquals("Hallo Welt!", translatorSpy.translate("Hallo Welt!", "en"));
+        assertEquals("Hallo Welt!", translatorSpy.translate("Hallo Welt!"));
         assertTrue(logger.getLogsString().contains("Translation failed: Failed to connect"));
     }
 
@@ -124,14 +124,14 @@ class TranslatorTest {
         setupCommonMocks();
         when(mockCall.execute()).thenReturn(response);
 
-        assertTrue(translatorSpy.isValidTargetLanguage("en"));
+        assertTrue(translatorSpy.isValidTargetLanguage());
     }
 
     @Test
     void testIsValidTargetLanguageInvalidAPIKey() {
         when(translatorSpy.validateApiKey()).thenReturn(false);
 
-        assertFalse(translatorSpy.isValidTargetLanguage("en"));
+        assertFalse(translatorSpy.isValidTargetLanguage());
     }
 
     @Test
@@ -141,7 +141,7 @@ class TranslatorTest {
         setupCommonMocks();
         doThrow(toThrow).when(mockCall).execute();
 
-        assertFalse(translatorSpy.isValidTargetLanguage("en"));
+        assertFalse(translatorSpy.isValidTargetLanguage());
         assertTrue(logger.getLogsString().contains("Failed to fetch available languages: Failed to connect"));
     }
 

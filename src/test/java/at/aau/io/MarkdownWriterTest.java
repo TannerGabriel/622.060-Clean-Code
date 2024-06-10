@@ -29,8 +29,9 @@ class MarkdownWriterTest {
     @Test
     void testAppendCrawlDetails() {
         when(translator.getSourceLanguage(anyString())).thenReturn("english");
+        when(translator.getTargetLanguage()).thenReturn("es");
 
-        markdownWriter.appendCrawlDetails("https://example.com", 2, "es");
+        markdownWriter.appendCrawlDetails("https://example.com", 2);
 
         String expectedOutput = "input: <a href=\"https://example.com\">https://example.com</a>\n" +
                 "<br> depth: 2\n" +
@@ -44,7 +45,7 @@ class MarkdownWriterTest {
     void testAppendContent() {
         setLinks();
 
-        markdownWriter.appendContent("https://example.com", createHeadings(), linkResults, 1, "es");
+        markdownWriter.appendContent("https://example.com", createHeadings(), linkResults, 1);
 
         String expectedOutput = "---\n" +
                 "Crawled URL: <a href=\"https://example.com\">https://example.com</a>\n" +
@@ -57,11 +58,11 @@ class MarkdownWriterTest {
 
     @Test
     void testAppendHeadingsWithValidLanguage() {
-        when(translator.isValidTargetLanguage("es")).thenReturn(true);
-        when(translator.translate(eq("Hello"), anyString())).thenReturn("Translated Hello");
-        when(translator.translate(eq("World"), anyString())).thenReturn("Translated World");
+        when(translator.isValidTargetLanguage()).thenReturn(true);
+        when(translator.translate(eq("Hello"))).thenReturn("Translated Hello");
+        when(translator.translate(eq("World"))).thenReturn("Translated World");
 
-        markdownWriter.appendHeadings(createHeadings(), 0, "es");
+        markdownWriter.appendHeadings(createHeadings(), 0);
 
         String expectedOutput = """
                 # Translated Hello
@@ -72,9 +73,9 @@ class MarkdownWriterTest {
 
     @Test
     void testAppendHeadingsWithInvalidLanguage() {
-        when(translator.isValidTargetLanguage(anyString())).thenReturn(false);
+        when(translator.isValidTargetLanguage()).thenReturn(false);
 
-        markdownWriter.appendHeadings(createHeadings(), 0, "invalidLang");
+        markdownWriter.appendHeadings(createHeadings(), 0);
 
         String expectedOutput = """
                 # Hello

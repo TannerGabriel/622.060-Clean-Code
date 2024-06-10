@@ -62,11 +62,11 @@ class CrawlerTest {
     @Test
     void testStartCrawlingSuccessful() throws IOException {
         mockJsoup();
-        doNothing().when(writer).appendCrawlDetails(anyString(), anyInt(), anyString());
+        doNothing().when(writer).appendCrawlDetails(anyString(), anyInt());
         doNothing().when(crawlerSpy).crawl(anyString(), anyInt());
 
         assertDoesNotThrow(() -> crawlerSpy.startCrawling());
-        verify(writer).appendCrawlDetails("https://google.com", 3, "en");
+        verify(writer).appendCrawlDetails("https://google.com", 3);
         verify(crawlerSpy).crawl("https://google.com", 0);
     }
 
@@ -121,12 +121,12 @@ class CrawlerTest {
     @Test
     void testCrawlWritesContent() throws IOException {
         mockJsoup();
-        doNothing().when(writer).appendContent(anyString(), any(), any(), anyInt(), anyString());
+        doNothing().when(writer).appendContent(anyString(), any(), any(), anyInt());
         doNothing().when(crawlerSpy).crawlIfNotVisited(anyString(), anyInt());
 
         crawlerSpy.crawl("https://google.com", 0);
 
-        verify(writer).appendContent(eq("https://google.com"), any(Heading[].class), any(LinkResults.class), eq(0), eq("en"));
+        verify(writer).appendContent(eq("https://google.com"), any(Heading[].class), any(LinkResults.class), eq(0));
     }
 
     @Test
