@@ -3,7 +3,6 @@ package at.aau.wrapper;
 import at.aau.io.Heading;
 import at.aau.utils.CrawlerUtils;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.List;

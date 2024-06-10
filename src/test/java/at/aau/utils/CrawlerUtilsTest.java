@@ -1,9 +1,8 @@
 package at.aau.utils;
 
-import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CrawlerUtilsTest {
 
